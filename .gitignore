@@ -2,3 +2,5 @@ node_modules
 build
 secrets.*.js
 package-lock.json
+yarn.lock
+yarn-error.log
