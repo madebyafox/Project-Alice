@@ -1,0 +1,30 @@
+
+{
+   "name": "HATTER",
+   "description" : "Project ALICE Data Logging Extension",
+   "version": "1.0",
+   "manifest_version": 2,
+   "options_page": "options.html",
+   "background": {
+      "persistent": false,
+      "scripts": [
+      "background.bundle.js"
+  ]
+   },
+   "icons": {
+     "28": "on.png"
+   },
+   "permissions": [
+     "webNavigation",
+     "tabs",
+     "windows",
+     "storage"
+   ],
+
+   "browser_action": {
+     "default_icon": "on.png",
+     "default_title": "HATTER"
+    },
+
+   "content_security_policy": "script-src 'self' 'unsafe-eval' https://unpkg.com https://code.jquery.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://stackpath.bootstrapcdn.com; object-src 'self'"
+ }
