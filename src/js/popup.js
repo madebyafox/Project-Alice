@@ -1,4 +1,13 @@
 import "../css/popup.css";
-import hello from "./popup/example";
+import { dumpDB } from "./database/database";
 
-hello();
+document.getElementById("doExport").addEventListener("click", downloadFile);
+
+function downloadFile(){
+  alert("Downloading File");
+  dumpDB()
+    .catch (err => {
+        console.error ("DB | EXPORT ERROR" + err.stack);
+        alert(("DB | EXPORT ERROR" + err.stack));
+    });
+}
