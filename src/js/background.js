@@ -5,10 +5,9 @@
 
 "use strict";
 
-import DB from "./database/database"; //DEXIE DB object
-import {exportDB} from "dexie-export-import";
-
-import streamSaver from './database/streamsaver'; //for generating files
+import {DB, dumpDB} from "./database/database"; //DEXIE DB object
+// import {exportDB} from "dexie-export-import";
+// import streamSaver from './database/streamsaver'; //for generating files
 
 import '../img/on.png';
 import '../img/off.png';
@@ -62,25 +61,6 @@ async function log(type, handler, sevent, data) {
 log().catch (err => {
       console.error ("DB | ERROR" + err.stack);
   });
-
-async function dumpDB(){
-  const blob = await exportDB(DB);
-  console.log(blob);
-
-  let file = JSON.stringify(blob);
-
-  new Response(blob).body
-      .pipeTo(fileStream)
-      // .then(success, error)
-}
-dumpDB().catch (err => {
-      console.error ("DB | EXPORT ERROR" + err.stack);
-  });
-
-dumpDB();
-
-
-// const fileStream = streamSaver.createWriteStream('hatter.json', {});
 
 const WINDOW_TYPES = [
   "normal","popup","panel","app","devtools"
