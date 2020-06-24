@@ -1,15 +1,16 @@
 import "../css/popup.css";
-import { dumpDB } from "./database/database";
+import { dumpDB, eraseDB } from "./database/database";
 
 window.addEventListener("load", function() {
       let state = localStorage.getItem('state');
       if (state == "true"){
-          document.getElementById("doLogToggle").innerHTML="Stop Logging";
+          document.getElementById("doLogToggle").innerHTML="Stop";
       }
-      else { document.getElementById("doLogToggle").innerHTML="Start Logging";}
+      else { document.getElementById("doLogToggle").innerHTML="Start";}
 
       document.getElementById("doExport").onclick = function(){downloadFile()};
       document.getElementById("doLogToggle").onclick = function(){tLog()};
+      document.getElementById("doErase").onclick = function(){eraseDB()};
 
 });
 
@@ -29,14 +30,14 @@ function tLog(){
       chrome.browserAction.setIcon({
         path : "off.png"
       });
-      document.getElementById("doLogToggle").innerHTML="Start Logging";
+      document.getElementById("doLogToggle").innerHTML="Start";
       localStorage.setItem('state', false);
     }
     else {
       chrome.browserAction.setIcon({
         path : "on.png"
       });
-      document.getElementById("doLogToggle").innerHTML="Stop Logging";
+      document.getElementById("doLogToggle").innerHTML="Stop";
       localStorage.setItem('state', true);
     }
   }

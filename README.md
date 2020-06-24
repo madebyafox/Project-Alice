@@ -8,11 +8,11 @@ Taming the madness of exploratory search
 [] infrastructure for file download
 [] pop-up to start file download
 [] download file on demmand
-
+[] toggl logging status on/off
 
 ## TODO
 [] clear db on demmand
-[] toggl logging status on/off
+
 
 
 //Thanks to
