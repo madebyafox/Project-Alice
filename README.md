@@ -3,15 +3,15 @@ Taming the madness of exploratory search
 
 
 ## WORKING
-[] logging webNav to indexedDB
-[] logging initial structure to indexedDB
-[] infrastructure for file download
-[] pop-up to start file download
-[] download file on demmand
-[] toggl logging status on/off
+* logging windows & tab structure (on initialization) to indexedDB
+* logging Windows and Tabs events to indexedDB
+* logging webNav (main frame, completed) to indexedDB
+* export database to file
+* toggl logging status on/off
+* clear db on demmand
 
 ## TODO
-[] clear db on demmand
+* launch analytics
 
 
 
