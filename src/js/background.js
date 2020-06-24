@@ -5,15 +5,11 @@
 
 "use strict";
 
-function initializeState(){
-  localStorage.setItem('state', true);
-}
-
-initializeState();
+//INITIALIZE STATE
+localStorage.setItem('state', true);
 
 import {DB, dumpDB} from "./database/database"; //DEXIE DB object
-// import {exportDB} from "dexie-export-import";
-// import streamSaver from './database/streamsaver'; //for generating files
+
 
 import '../img/on.png';
 import '../img/off.png';
@@ -21,17 +17,6 @@ import '../img/off.png';
 
 // chrome.browserAction.onClicked.addListener(function(activeTab)
 // {
-//   switch(toggle){
-//     case true:
-//       chrome.browserAction.setIcon({path: "off.png"});
-//       toggle = false;
-//       break;
-//     case false:
-//       chrome.browserAction.setIcon({path: "on.png"});
-//       toggle = true;
-//       break;
-//     }
-//
 //  let newurl = "main.html";
 //   chrome.tabs.create({ url: newurl });
 // });
@@ -104,10 +89,13 @@ const WINDOW_EVENTS = [ //https://developer.chrome.com/extensions/windows#event-
 WINDOW_EVENTS.forEach(function(e) {
   chrome.windows[e].addListener(function(data) {
     if (typeof data) {
-      let currData = {windowId:data}
-      let time = Date.now();
-      log("navigation", "windows", e, {time:time, result:currData});
-      console.log(chrome.i18n.getMessage('inWindowsHandler'), e, time, data);
+      if (localStorage.getItem('state') == "true" ) {
+        let currData = {windowId:data}
+        let time = Date.now();
+        log("navigation", "windows", e, {time:time, result:currData});
+        console.log(chrome.i18n.getMessage('inWindowsHandler'), e, time, data);
+      }
+      else {console.log("not logging: "+ e);}
     }
     else {
       console.error(chrome.i18n.getMessage('inWindowsHandlerError'), e);}
@@ -130,40 +118,43 @@ const TAB_EVENTS = [
 TAB_EVENTS.forEach(function(e) {
   chrome.tabs[e].addListener(function (p1, p2, p3) {
     if (typeof data) {
-      let time = Date.now()
-      switch (e){
-        case "onCreated" :
-          log("navigation", "tabs", e, {time:time, result:{tab:p1}});
-          console.log(chrome.i18n.getMessage('inTabsHandler'), e, time, p1);
-          break;
-
-        case "onActivated" :
-          log("navigation", "tabs", e, {time:time, result:{activeInfo:p1}});
-          console.log(chrome.i18n.getMessage('inTabsHandler'), e, time, p1);
-          break;
-
-        case "onUpdated" :
-          if (p2.url) {
-            log("navigation", "tabs", e, {time:time, result:{tabId:p1, changeInfo:p2, tab:p3}});
+      if (localStorage.getItem('state') == "true" ) {
+        let time = Date.now()
+        switch (e){
+          case "onCreated" :
+            log("navigation", "tabs", e, {time:time, result:{tab:p1}});
             console.log(chrome.i18n.getMessage('inTabsHandler'), e, time, p1);
-          }
-          else {
-            console.log(chrome.i18n.getMessage('inTabsHandler'), "SKIPLOG "+e, time, {tabId:p1})};
-          break;
+            break;
 
-        case "onMoved" :
-        case "onDetached" :
-        case "onAttached" :
-        case "onRemoved" :
-        case "onReplaced" :
-          log("navigation", "tabs", e, {time:time, result:{tabId:p1, DELTAS:p2}});
-          console.log(chrome.i18n.getMessage('inTabsHandler'), e, time, p1);
-          break;
+          case "onActivated" :
+            log("navigation", "tabs", e, {time:time, result:{activeInfo:p1}});
+            console.log(chrome.i18n.getMessage('inTabsHandler'), e, time, p1);
+            break;
 
-        default:
-          console.log("fell through case: ", e);
+          case "onUpdated" :
+            if (p2.url) {
+              log("navigation", "tabs", e, {time:time, result:{tabId:p1, changeInfo:p2, tab:p3}});
+              console.log(chrome.i18n.getMessage('inTabsHandler'), e, time, p1);
+            }
+            else {
+              console.log(chrome.i18n.getMessage('inTabsHandler'), "SKIPLOG "+e, time, {tabId:p1})};
+            break;
+
+          case "onMoved" :
+          case "onDetached" :
+          case "onAttached" :
+          case "onRemoved" :
+          case "onReplaced" :
+            log("navigation", "tabs", e, {time:time, result:{tabId:p1, DELTAS:p2}});
+            console.log(chrome.i18n.getMessage('inTabsHandler'), e, time, p1);
+            break;
+
+          default:
+            console.log("fell through case: ", e);
+        }
       }
-     }
+      else {console.log("not logging: "+ e);}
+    }
     else {
       console.error(chrome.i18n.getMessage('inTabsHandlerError'), e);}
   });
@@ -190,16 +181,19 @@ const WEBNAV_EVENTS = [
 WEBNAV_EVENTS.forEach(function(e) {
   chrome.webNavigation[e].addListener(function(data) {
     let time = Date.now();
-    if (typeof data){
-      if (data.frameId == 0) {
-        log("navigation", "webNav", e, {time:time, result:data});
-        console.log(chrome.i18n.getMessage('inNavHandler'), e, time, data);
+    if (typeof data) {
+      if (localStorage.getItem('state') == "true" ) {
+        if (data.frameId == 0) {
+          log("navigation", "webNav", e, {time:time, result:data});
+          console.log(chrome.i18n.getMessage('inNavHandler'), e, time, data);
+        }
+        else {
+          console.log(chrome.i18n.getMessage('inNavHandler'), "SKIPLOG "+e, time, data);
+        }
       }
-      else {
-        console.log(chrome.i18n.getMessage('inNavHandler'), "SKIPLOG "+e, time, data);
-      }
+      else {console.log("not logging: "+ e);}
     }
     else {
-      console.error(chrome.i18n.getMessage('inNavHandlerError'), e);}
+      console.error(chrome.i18n.getMessage('inWindowsHandlerError'), e);}
   });
 });
