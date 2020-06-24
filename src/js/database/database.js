@@ -21,5 +21,11 @@ async function dumpDB(){
       // .then(alert("wrote file"));
 }
 
-export {DB, dumpDB};
+async function eraseDB(){
+  DB.navigation.clear();
+  DB.structure.clear();
+  alert("Your logging data has been erased");
+}
+
+export {DB, dumpDB, eraseDB};
 //TODO: figure out correct export format
