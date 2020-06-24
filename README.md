@@ -15,5 +15,4 @@ Taming the madness of exploratory search
 
 
 
-//Thanks to
-https://github.com/samuelsimoes/chrome-extension-webpack-boilerplate
+*Thanks to webpack boilerplate https://github.com/samuelsimoes/chrome-extension-webpack-boilerplate*
