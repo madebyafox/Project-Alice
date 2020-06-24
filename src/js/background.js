@@ -5,6 +5,12 @@
 
 "use strict";
 
+function initializeState(){
+  localStorage.setItem('state', true);
+}
+
+initializeState();
+
 import {DB, dumpDB} from "./database/database"; //DEXIE DB object
 // import {exportDB} from "dexie-export-import";
 // import streamSaver from './database/streamsaver'; //for generating files
@@ -12,24 +18,23 @@ import {DB, dumpDB} from "./database/database"; //DEXIE DB object
 import '../img/on.png';
 import '../img/off.png';
 
-//ON CLICK OF BROWSER ICON, LAUNCH MAIN AND CHANGE ICON
-let toggle = true;
-chrome.browserAction.onClicked.addListener(function(activeTab)
-{
-  switch(toggle){
-    case true:
-      chrome.browserAction.setIcon({path: "off.png"});
-      toggle = false;
-      break;
-    case false:
-      chrome.browserAction.setIcon({path: "on.png"});
-      toggle = true;
-      break;
-    }
 
- let newurl = "main.html";
-  chrome.tabs.create({ url: newurl });
-});
+// chrome.browserAction.onClicked.addListener(function(activeTab)
+// {
+//   switch(toggle){
+//     case true:
+//       chrome.browserAction.setIcon({path: "off.png"});
+//       toggle = false;
+//       break;
+//     case false:
+//       chrome.browserAction.setIcon({path: "on.png"});
+//       toggle = true;
+//       break;
+//     }
+//
+//  let newurl = "main.html";
+//   chrome.tabs.create({ url: newurl });
+// });
 
 if (!('indexedDB' in window)) {
     alert('This browser doesn\'t support IndexedDB, and cannot support this extension');

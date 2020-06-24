@@ -22,7 +22,7 @@
    ],
 
    "browser_action": {
-     "default_icon": "off.png",
+     "default_icon": "on.png",
      "default_title": "HATTER",
      "default_popup": "popup.html"
     },
