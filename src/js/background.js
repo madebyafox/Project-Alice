@@ -10,10 +10,8 @@ localStorage.setItem('state', true);
 
 import {DB, dumpDB} from "./database/database"; //DEXIE DB object
 
-
 import '../img/on.png';
 import '../img/off.png';
-
 
 // chrome.browserAction.onClicked.addListener(function(activeTab)
 // {
@@ -25,32 +23,10 @@ if (!('indexedDB' in window)) {
     alert('This browser doesn\'t support IndexedDB, and cannot support this extension');
 }
 
-//LOG to the database (uses Dexie promise db object)
-async function log(type, handler, sevent, data) {
-    // console.log("DB | trying to logToDB | "+type);
-    switch(type){
-      case "navigation":
-        var logged = await DB.navigation.put({
-          id: data.time,
-          handler: handler,
-          event: sevent,
-          data: data.result
-        });
-        console.log("LOGGED :" + logged);
-        break;
-      case "structure":
-      var logged = await DB.structure.put({
-        id: data.time,
-        handler: handler,
-        event: sevent,
-        data: data.result
-      });
-      break;
-    }
-  }
-log().catch (err => {
-      console.error ("DB | ERROR" + err.stack);
-  });
+
+// log().catch (err => {
+//       console.error ("DB | ERROR" + err.stack);
+//   });
 
 const WINDOW_TYPES = [
   "normal","popup","panel","app","devtools"
