@@ -10,6 +10,7 @@ window.addEventListener("load", function() {
   document.getElementById("doLogToggle").onclick = function(){uTLog()};
   document.getElementById("doErase").onclick = function(){uErase();};
   document.getElementById("doRecord").onclick = function(){uRecord();};
+  document.getElementById("doSave").onclick = function(){uSave();};
 
   //SET TOGGLE TEXT
   if (logging == "true"){
@@ -21,10 +22,9 @@ window.addEventListener("load", function() {
     document.getElementById("doRecord").innerHTML="Stop Recording";
     document.getElementById("doRecord").classList.remove("btn-outline-dark");
     document.getElementById("doRecord").classList.add("btn-outline-danger");
+    document.getElementById("doWrite").placeholder="Enter annotations here";
   }
   else { document.getElementById("doPurpose").style.display="none";}
-
-      // document.getElementById("doPurpose").style.display="none";
 
 });
 
@@ -46,7 +46,7 @@ function uTLog(){
       });
       document.getElementById("doLogToggle").innerHTML="Start Logging";
       localStorage.setItem('state', false);
-      log("navigation", "system", "STOP LOGGING", {time:Date.now()})
+      log("navigation", "ui", "STOP LOGGING", {time:Date.now()})
         .catch(err => {console.error ("DB | ERROR" + err.stack);});
     }
   else {
@@ -55,7 +55,7 @@ function uTLog(){
       });
       document.getElementById("doLogToggle").innerHTML="Stop Logging";
       localStorage.setItem('state', true);
-      log("navigation", "system", "START LOGGING", {time:Date.now()})
+      log("navigation", "ui", "START LOGGING", {time:Date.now()})
         .catch(err => {console.error ("DB | ERROR" + err.stack);});
     }
   }
@@ -77,20 +77,59 @@ function uErase(){
 function uRecord(){
   let logging = localStorage.getItem('recording');
   switch(logging){
-    case "false":
-      document.getElementById("doPurpose").style.display="flex";
-      document.getElementById("doRecord").innerHTML="Stop Recording";
+    case "false": //start recording!
+
+      //LOG STRUCTURE
+      log("structure", "recording", "start", {time:Date.now()})
+        .catch(err => {console.error ("DB | ERROR" + err.stack);});
+      localStorage.setItem('recording', true);
+
+      //UPDATE RECORDING BUTTON
       document.getElementById("doRecord").classList.remove("btn-outline-dark");
       document.getElementById("doRecord").classList.add("btn-outline-danger");
-      localStorage.setItem('recording', true);
-      break;
-    case "true":
-      document.getElementById("doPurpose").style.display="none";
-      document.getElementById("doRecord").innerHTML="Record Session";
-      document.getElementById("doRecord").classList.add("btn-outline-dark");
-      document.getElementById("doRecord").classList.remove("btn-outline-danger");
-      localStorage.setItem('recording', false);
+
+      //UPDATE INPUT UI
+      document.getElementById("doPurpose").style.display="flex";
+      document.getElementById("doRecord").innerHTML="Stop Recording";
 
       break;
+    case "true": //stop recording!
+
+      //LOG STRUCTURE
+      log("structure", "recording", "stop", {time:Date.now()})
+        .catch(err => {console.error ("DB | ERROR" + err.stack);});
+      localStorage.setItem('recording', false);
+
+      //UPDATE RECORDING BUTTON
+      document.getElementById("doRecord").classList.add("btn-outline-dark");
+      document.getElementById("doRecord").classList.remove("btn-outline-danger");
+
+      //UPDATE INPUT UI
+      document.getElementById("doPurpose").style.display="none";
+      document.getElementById("doRecord").innerHTML="Record Session";
+
+      break;
+  }
+}
+
+function uSave(){
+  let text = document.getElementById("doWrite").value;
+
+  //is this the start of the session? or continuation?
+  let stage = (document.getElementById("doWrite").placeholder);
+  if (stage == "Enter annotations here"){
+    //LOG AS ANNOTATION
+    log("recording", "ui", "annotation", {time:Date.now(), result:text})
+      .catch(err => {console.error ("DB | ERROR" + err.stack);});
+    window.close();
+  }
+  else {
+    //LOG AS GOAL
+    log("recording", "ui", "goal", {time:Date.now(), result:text})
+      .catch(err => {console.error ("DB | ERROR" + err.stack);});
+
+    //UPDATE INPUT UI
+    document.getElementById("doWrite").value=null;
+    document.getElementById("doWrite").placeholder="Enter annotations here";
   }
 }
