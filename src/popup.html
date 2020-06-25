@@ -5,47 +5,28 @@
   <title></title>
   <script src="popup.bundle.js"></script>
 
-  <!-- JQUERY :: required for bootstrap -->
-  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <!-- BOOTSTRAP FOR BUTTON STYLING -->
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
-  <style>
-  button {
-    margin: 5px 10px 5px 10px;
-  }
-
-  </style>
 
 </head>
 <body>
-    <button id="doLogToggle" class="btn btn-outline-dark btn-sm" type="button"></button>
-    <button id="doExport" class="btn btn-outline-dark btn-sm" type="button">Export File</button>
-    <button id="doErase" class="btn btn-outline-dark btn-sm" type="button">Erase Data</button>
 
+  <div style ="margin: 10px 10px 10px 10px" class="btn-group-vertical">
 
-    <!-- Modal -->
-    <div id="modalDownload" class="modal fade" role="dialog">
-      <div class="modal-dialog">
+    <button id="doLogToggle" class="btn btn-outline-dark btn-sm text-nowrap" type="button"></button>
+    <button id="doExport" class="btn btn-outline-dark btn-sm text-nowrap" type="button">Export File</button>
+    <button id="doErase" class="btn btn-outline-dark btn-sm text-nowrap" type="button">Erase Data</button>
+    <button id="doRecord" class="btn btn-outline-dark btn-sm text-nowrap" type="button"
+                          data-toggle="modal" data-target="#exampleModalCenter" >Record Session</button>
+  </div>
 
-        <!-- Modal content-->
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">Confirm data erase</h4>
-          </div>
-          <div class="modal-body">
-            <p>Would you like to download your data before erasing? </p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Download, then erase.</button>
-            <button type="button" class="btn btn-default" data-dismiss="modal">Just erase.</button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
+  <div id="doPurpose" class="btn-group-vertical" style="">
+  </hr>
+    <textarea  style="height:200px" class="form-control" placeholder="What is the goal of your search?" aria-label="With textarea"></textarea>
+    <button class="btn btn-outline-dark btn-sm text-nowrap" type="button">Save</button>
+  </div>
 
 
 </body>

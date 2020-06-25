@@ -7,6 +7,7 @@
 
 //INITIALIZE STATE
 localStorage.setItem('state', true);
+localStorage.setItem('recording', false);
 
 import {DB, dumpDB, log} from "./database/database"; //DEXIE DB object
 

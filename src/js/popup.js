@@ -2,17 +2,29 @@ import "../css/popup.css";
 import { dumpDB, eraseDB, log } from "./database/database";
 
 window.addEventListener("load", function() {
-      let state = localStorage.getItem('state');
-      if (state == "true"){
-          document.getElementById("doLogToggle").innerHTML="Stop Logging";
-      }
-      else { document.getElementById("doLogToggle").innerHTML="Start Logging";}
+  let logging = localStorage.getItem('state');
+  let recording = localStorage.getItem('recording');
 
-      document.getElementById("doExport").onclick = function(){uDownloadFile()};
-      document.getElementById("doLogToggle").onclick = function(){uTLog()};
-      document.getElementById("doErase").onclick = function(){uErase();};
+  //ADD EVENT LISTENERS
+  document.getElementById("doExport").onclick = function(){uDownloadFile()};
+  document.getElementById("doLogToggle").onclick = function(){uTLog()};
+  document.getElementById("doErase").onclick = function(){uErase();};
+  document.getElementById("doRecord").onclick = function(){uRecord();};
 
+  //SET TOGGLE TEXT
+  if (logging == "true"){
+    document.getElementById("doLogToggle").innerHTML="Stop Logging";}
+  else { document.getElementById("doLogToggle").innerHTML="Start Logging";}
 
+  if (recording == "true"){
+    document.getElementById("doPurpose").style.display="flex";
+    document.getElementById("doRecord").innerHTML="Stop Recording";
+    document.getElementById("doRecord").classList.remove("btn-outline-dark");
+    document.getElementById("doRecord").classList.add("btn-outline-danger");
+  }
+  else { document.getElementById("doPurpose").style.display="none";}
+
+      // document.getElementById("doPurpose").style.display="none";
 
 });
 
@@ -26,9 +38,9 @@ function uDownloadFile() {
 }
 
 function uTLog(){
-  let state = localStorage.getItem('state');
+  let logging = localStorage.getItem('state');
   // alert (typeof(state));
-  if (state == "true"){
+  if (logging == "true"){
       chrome.browserAction.setIcon({
         path : "off.png"
       });
@@ -37,7 +49,7 @@ function uTLog(){
       log("navigation", "system", "STOP LOGGING", {time:Date.now()})
         .catch(err => {console.error ("DB | ERROR" + err.stack);});
     }
-    else {
+  else {
       chrome.browserAction.setIcon({
         path : "on.png"
       });
@@ -60,4 +72,25 @@ function uErase(){
       console.error ("DB | ERASE ERROR" + err.stack);
       alert(("DB | ERASE ERROR" + err.stack));
     });
+}
+
+function uRecord(){
+  let logging = localStorage.getItem('recording');
+  switch(logging){
+    case "false":
+      document.getElementById("doPurpose").style.display="flex";
+      document.getElementById("doRecord").innerHTML="Stop Recording";
+      document.getElementById("doRecord").classList.remove("btn-outline-dark");
+      document.getElementById("doRecord").classList.add("btn-outline-danger");
+      localStorage.setItem('recording', true);
+      break;
+    case "true":
+      document.getElementById("doPurpose").style.display="none";
+      document.getElementById("doRecord").innerHTML="Record Session";
+      document.getElementById("doRecord").classList.add("btn-outline-dark");
+      document.getElementById("doRecord").classList.remove("btn-outline-danger");
+      localStorage.setItem('recording', false);
+
+      break;
+  }
 }
