@@ -8,13 +8,15 @@ window.addEventListener("load", function() {
       }
       else { document.getElementById("doLogToggle").innerHTML="Start Logging";}
 
-      document.getElementById("doExport").onclick = function(){downloadFile()};
-      document.getElementById("doLogToggle").onclick = function(){tLog()};
-      document.getElementById("doErase").onclick = function(){eraseDB()};
+      document.getElementById("doExport").onclick = function(){uDownloadFile()};
+      document.getElementById("doLogToggle").onclick = function(){uTLog()};
+      document.getElementById("doErase").onclick = function(){uErase();};
+
+
 
 });
 
-function downloadFile() {
+function uDownloadFile() {
   alert("Downloading File");
   dumpDB()
     .catch (err => {
@@ -23,7 +25,7 @@ function downloadFile() {
     });
 }
 
-function tLog(){
+function utLog(){
   let state = localStorage.getItem('state');
   // alert (typeof(state));
   if (state == "true"){
@@ -45,3 +47,17 @@ function tLog(){
         .catch(err => {console.error ("DB | ERROR" + err.stack);});
     }
   }
+
+function uErase(){
+  alert("Downloading your data first");
+  dumpDB()
+    .catch (err => {
+        console.error ("DB | EXPORT ERROR" + err.stack);
+        alert(("DB | EXPORT ERROR" + err.stack));
+    });
+  eraseDB()
+    .catch (err => {
+      console.error ("DB | ERASE ERROR" + err.stack);
+      alert(("DB | ERASE ERROR" + err.stack));
+    });
+}
