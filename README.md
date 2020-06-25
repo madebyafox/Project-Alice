@@ -11,7 +11,15 @@ Taming the madness of exploratory search
 * clear db on demmand
 
 ## TODO
-* launch analytics
+
+* track toggles in logging
+* log a user identifier
+* let user designate start/end of a "search session"
+* support realtime annotation
+
+
+
+launch analytics
 
 
 
