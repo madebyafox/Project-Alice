@@ -25,7 +25,7 @@ function uDownloadFile() {
     });
 }
 
-function utLog(){
+function uTLog(){
   let state = localStorage.getItem('state');
   // alert (typeof(state));
   if (state == "true"){
