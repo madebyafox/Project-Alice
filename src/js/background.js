@@ -8,7 +8,7 @@
 //INITIALIZE STATE
 localStorage.setItem('state', true);
 
-import {DB, dumpDB} from "./database/database"; //DEXIE DB object
+import {DB, dumpDB, log} from "./database/database"; //DEXIE DB object
 
 import '../img/on.png';
 import '../img/off.png';
@@ -22,11 +22,6 @@ import '../img/off.png';
 if (!('indexedDB' in window)) {
     alert('This browser doesn\'t support IndexedDB, and cannot support this extension');
 }
-
-
-// log().catch (err => {
-//       console.error ("DB | ERROR" + err.stack);
-//   });
 
 const WINDOW_TYPES = [
   "normal","popup","panel","app","devtools"
@@ -51,7 +46,10 @@ let BrowserAPI = {
 
 //GET STRUCTURE
 BrowserAPI.getAllWindows().then (
-   result => (log("structure", "initialize", "initialize", result)),
+   result => (
+     log("structure", "initialize", "initialize", result)
+      .catch(err => {console.error ("DB | ERROR" + err.stack);})
+   ),
    error => console.log("error!")
  );
 
@@ -68,7 +66,8 @@ WINDOW_EVENTS.forEach(function(e) {
       if (localStorage.getItem('state') == "true" ) {
         let currData = {windowId:data}
         let time = Date.now();
-        log("navigation", "windows", e, {time:time, result:currData});
+        log("navigation", "windows", e, {time:time, result:currData})
+          .catch(err => {console.error ("DB | ERROR" + err.stack);});
         console.log(chrome.i18n.getMessage('inWindowsHandler'), e, time, data);
       }
       else {console.log("not logging: "+ e);}
@@ -98,18 +97,21 @@ TAB_EVENTS.forEach(function(e) {
         let time = Date.now()
         switch (e){
           case "onCreated" :
-            log("navigation", "tabs", e, {time:time, result:{tab:p1}});
+            log("navigation", "tabs", e, {time:time, result:{tab:p1}})
+              .catch(err => {console.error ("DB | ERROR" + err.stack);});
             console.log(chrome.i18n.getMessage('inTabsHandler'), e, time, p1);
             break;
 
           case "onActivated" :
-            log("navigation", "tabs", e, {time:time, result:{activeInfo:p1}});
+            log("navigation", "tabs", e, {time:time, result:{activeInfo:p1}})
+                .catch(err => {console.error ("DB | ERROR" + err.stack);});
             console.log(chrome.i18n.getMessage('inTabsHandler'), e, time, p1);
             break;
 
           case "onUpdated" :
             if (p2.url) {
-              log("navigation", "tabs", e, {time:time, result:{tabId:p1, changeInfo:p2, tab:p3}});
+              log("navigation", "tabs", e, {time:time, result:{tabId:p1, changeInfo:p2, tab:p3}})
+                .catch(err => {console.error ("DB | ERROR" + err.stack);});
               console.log(chrome.i18n.getMessage('inTabsHandler'), e, time, p1);
             }
             else {
@@ -121,10 +123,10 @@ TAB_EVENTS.forEach(function(e) {
           case "onAttached" :
           case "onRemoved" :
           case "onReplaced" :
-            log("navigation", "tabs", e, {time:time, result:{tabId:p1, DELTAS:p2}});
+            log("navigation", "tabs", e, {time:time, result:{tabId:p1, DELTAS:p2}})
+              .catch(err => {console.error ("DB | ERROR" + err.stack);});
             console.log(chrome.i18n.getMessage('inTabsHandler'), e, time, p1);
             break;
-
           default:
             console.log("fell through case: ", e);
         }
@@ -160,7 +162,8 @@ WEBNAV_EVENTS.forEach(function(e) {
     if (typeof data) {
       if (localStorage.getItem('state') == "true" ) {
         if (data.frameId == 0) {
-          log("navigation", "webNav", e, {time:time, result:data});
+          log("navigation", "webNav", e, {time:time, result:data})
+            .catch(err => {console.error ("DB | ERROR" + err.stack);});
           console.log(chrome.i18n.getMessage('inNavHandler'), e, time, data);
         }
         else {

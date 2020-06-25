@@ -1,5 +1,5 @@
 import "../css/popup.css";
-import { dumpDB, eraseDB } from "./database/database";
+import { dumpDB, eraseDB, log } from "./database/database";
 
 window.addEventListener("load", function() {
       let state = localStorage.getItem('state');
@@ -32,6 +32,9 @@ function tLog(){
       });
       document.getElementById("doLogToggle").innerHTML="Start";
       localStorage.setItem('state', false);
+      alert("STOP LOGGING");
+      log("navigation", "system", "STOP LOGGING", {time:Date.now()})
+        .catch(err => {console.error ("DB | ERROR" + err.stack);});
     }
     else {
       chrome.browserAction.setIcon({
@@ -39,5 +42,8 @@ function tLog(){
       });
       document.getElementById("doLogToggle").innerHTML="Stop";
       localStorage.setItem('state', true);
+      alert("START LOGGING");
+      log("navigation", "system", "START LOGGING", {time:Date.now()})
+        .catch(err => {console.error ("DB | ERROR" + err.stack);});
     }
   }

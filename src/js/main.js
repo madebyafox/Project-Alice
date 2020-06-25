@@ -2,7 +2,6 @@ import '../css/styles.css'
 import '../css/svg-styles.css'
 
 
-
 //USES https://developer.chrome.com/extensions/windows
 
 //note: imported d3 library (main) in main.html
