@@ -2,7 +2,7 @@
 {
    "name": "HATTER",
    "description" : "Project ALICE Data Logging Extension",
-   "version": "1.0",
+   "version": "0.1",
    "manifest_version": 2,
    "options_page": "options.html",
    "background": {
