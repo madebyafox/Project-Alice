@@ -6,6 +6,7 @@
   <script src="popup.bundle.js"></script>
 
   <!-- BOOTSTRAP FOR BUTTON STYLING -->
+
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
@@ -14,12 +15,10 @@
 <body>
 
   <div style ="margin: 10px 10px 10px 10px" class="btn-group-vertical">
-
-    <button id="doLogToggle" class="btn btn-outline-dark btn-sm text-nowrap" type="button"></button>
-    <button id="doExport" class="btn btn-outline-dark btn-sm text-nowrap" type="button">Export File</button>
-    <button id="doErase" class="btn btn-outline-dark btn-sm text-nowrap" type="button">Erase Data</button>
-    <button id="doRecord" class="btn btn-outline-dark btn-sm text-nowrap" type="button"
-                          data-toggle="modal" data-target="#exampleModalCenter" >Record Session</button>
+    <button id="doLogToggle" class="btn btn-outline-dark btn-sm text-nowrap" title="Toggle state of data logging" type="button"></button>
+    <button id="doExport" class="btn btn-outline-dark btn-sm text-nowrap" title="Export all data to file and download" type="button">Export File</button>
+    <button id="doErase" class="btn btn-outline-dark btn-sm text-nowrap" title = "Remove all data from database" type="button">Erase Data</button>
+    <button id="doRecord" class="btn btn-outline-dark btn-sm text-nowrap" title = "Log a dedicated search session" type="button">Record Session</button>
   </div>
 
   <div id="doPurpose" class="btn-group-vertical" style="">
