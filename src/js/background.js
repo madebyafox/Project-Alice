@@ -48,7 +48,7 @@ let BrowserAPI = {
 //GET STRUCTURE
 BrowserAPI.getAllWindows().then (
    result => (
-     log("structure", "initialize", "initialize", result)
+     log("structure", "initialize", "version "+chrome.runtime.getManifest().version , result)
       .catch(err => {console.error ("DB | ERROR" + err.stack);})
    ),
    error => console.log("error!")
