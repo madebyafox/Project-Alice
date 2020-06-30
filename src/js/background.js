@@ -6,7 +6,7 @@
 "use strict";
 
 //INITIALIZE STATE
-localStorage.setItem('state', true);
+localStorage.setItem('logging', true);
 localStorage.setItem('recording', false);
 
 import {DB, dumpDB, log} from "./database/database"; //DEXIE DB object
@@ -64,7 +64,7 @@ const WINDOW_EVENTS = [ //https://developer.chrome.com/extensions/windows#event-
 WINDOW_EVENTS.forEach(function(e) {
   chrome.windows[e].addListener(function(data) {
     if (typeof data) {
-      if (localStorage.getItem('state') == "true" ) {
+      if (localStorage.getItem('logging') == "true" ) {
         let currData = {windowId:data}
         let time = Date.now();
         log("navigation", "windows", e, {time:time, result:currData})
@@ -94,7 +94,7 @@ const TAB_EVENTS = [
 TAB_EVENTS.forEach(function(e) {
   chrome.tabs[e].addListener(function (p1, p2, p3) {
     if (typeof data) {
-      if (localStorage.getItem('state') == "true" ) {
+      if (localStorage.getItem('logging') == "true" ) {
         let time = Date.now()
         switch (e){
           case "onCreated" :
@@ -161,7 +161,7 @@ WEBNAV_EVENTS.forEach(function(e) {
   chrome.webNavigation[e].addListener(function(data) {
     let time = Date.now();
     if (typeof data) {
-      if (localStorage.getItem('state') == "true" ) {
+      if (localStorage.getItem('logging') == "true" ) {
         if (data.frameId == 0) {
           log("navigation", "webNav", e, {time:time, result:data})
             .catch(err => {console.error ("DB | ERROR" + err.stack);});
