@@ -1,6 +1,6 @@
 {
   "name": "HATTER",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Project ALICE Data Logging Extension",
   "scripts": {
     "build": "node utils/build.js",
