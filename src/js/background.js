@@ -5,7 +5,7 @@
 
 "use strict";
 
-import {DB, dumpDB, log} from "./database/database"; //DEXIE DB object
+import {dumpDB, log} from "./database/database"; //DEXIE DB object
 import '../img/on.png';
 import '../img/off.png';
 
@@ -169,7 +169,7 @@ WEBNAV_EVENTS.forEach(function(e) {
   });
 });
 
-//ON EXTENSION INSTALL, LOG CURRENT STRUCTURE AND BROWSER information
+//ON EXTENSION INSTALL, LOG CURRENT STRUCTURE
 //GET BROWSER WINDOW & TAB STRUCTURE
 BrowserAPI.getAllWindows()
   .then (
@@ -180,7 +180,8 @@ BrowserAPI.getAllWindows()
    error => console.log("error!")
   )
 
-  chrome.identity.getProfileUserInfo(function(UserInfo) {
+//LOG BROWSER and USER information
+chrome.identity.getProfileUserInfo(function(UserInfo) {
     console.log(UserInfo);
     // return result;
     log(Date.now(),"meta", "initialize", "initialize",
@@ -189,26 +190,4 @@ BrowserAPI.getAllWindows()
           user: UserInfo
         })
         .catch(err => {console.error ("DB | ERROR" + err.stack);})
-  })
-
-  // .then (
-    // chrome.identity.getProfileUserInfo(function(result) {
-    //   console.log(JSON.stringify(result));
-    //   console.log(result);
-    //   // return result;
-    // })
-  //   return new Promise(
-  //     function (resolve, reject){
-  //       chrome.identity.getProfileUserInfo(function(result){
-  //         resolve(result);
-  //         reject("ERROR");
-  //       });
-  //     });
-  // ).then (
-  //   result => log(Date.now(),"meta", "initialize", "initialize",
-  //     {extension: chrome.runtime.getManifest().version,
-  //       userAgent:window.navigator.userAgent,
-  //       user: result
-  //     })
-  //     .catch(err => {console.error ("DB | ERROR" + err.stack);})
-  // )
+  });
