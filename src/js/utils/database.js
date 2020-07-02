@@ -1,6 +1,6 @@
 import Dexie from 'dexie';
 import {exportDB} from "dexie-export-import";
-import streamSaver from '../database/streamsaver'; //for generating files
+import streamSaver from '../utils/streamsaver'; //for generating files
 
 
 const DB = new Dexie('hatter');

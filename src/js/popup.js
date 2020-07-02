@@ -1,5 +1,5 @@
 import "../css/popup.css";
-import { dumpDB, eraseDB, log } from "./database/database";
+import { dumpDB, eraseDB, log } from "./utils/database";
 import '../img/record.png';
 import '../img/on.png';
 import '../img/off.png';
@@ -84,17 +84,20 @@ function uToggleLogging(){
 
 //ERASE all data from the indexedDB
 function uErase(){
-  alert("Downloading your data first");
-  dumpDB()
-    .catch (err => {
-        console.error ("DB | EXPORT ERROR" + err.stack);
-        alert(("DB | EXPORT ERROR" + err.stack));
-    });
-  eraseDB()
-    .catch (err => {
-      console.error ("DB | ERASE ERROR" + err.stack);
-      alert(("DB | ERASE ERROR" + err.stack));
-    });
+  if ( window.confirm("Are you sure you want to erase your navigation log?")) {
+    // txt = "You pressed OK!";
+    alert("Your data will be saved to a file and then erased");
+    dumpDB()
+      .catch (err => {
+          console.error ("DB | EXPORT ERROR" + err.stack);
+          alert(("DB | EXPORT ERROR" + err.stack));
+      });
+    eraseDB()
+      .catch (err => {
+        console.error ("DB | ERASE ERROR" + err.stack);
+        alert(("DB | ERASE ERROR" + err.stack));
+      });
+  }
 }
 
 //SAVE the annotation

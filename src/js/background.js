@@ -5,7 +5,8 @@
 
 "use strict";
 
-import {dumpDB, log} from "./database/database"; //DEXIE DB object
+import {dumpDB, log} from "./utils/database";
+import {getAllWindows} from "./utils/browserAPI";
 import '../img/on.png';
 import '../img/off.png';
 
@@ -24,26 +25,6 @@ if (!('indexedDB' in window)) {
     alert('This browser doesn\'t support IndexedDB, and cannot support this extension');
 }
 
-const WINDOW_TYPES = [
-  "normal","popup","panel","app","devtools"
-];
-const OPTS = {
-  "populate" : true,
-  "windowTypes": WINDOW_TYPES
-};
-
-//ACCESS TO BROWSER APIS
-let BrowserAPI = {
-  getAllWindows: function(){
-    return new Promise(
-      function (resolve, reject){
-        chrome.windows.getAll(OPTS, function(result){
-          resolve({time:Date.now(), result:result});
-          reject("window retrieval error");
-        });
-      });
-  }
-}
 
 // HANDLE WINDOW EVENTS
 const WINDOW_EVENTS = [ //https://developer.chrome.com/extensions/windows#event-onCreated
@@ -170,14 +151,13 @@ WEBNAV_EVENTS.forEach(function(e) {
 });
 
 //ON EXTENSION INSTALL, LOG CURRENT STRUCTURE
-//GET BROWSER WINDOW & TAB STRUCTURE
-BrowserAPI.getAllWindows()
+getAllWindows()
   .then (
    result => (
      log(Date.now(),"structure", "initialize", "initialize", {result})
       .catch(err => {console.error ("DB | ERROR" + err.stack);})
    ),
-   error => console.log("error!")
+   error => console.log("error! "+error)
   )
 
 //LOG BROWSER and USER information
@@ -191,3 +171,14 @@ chrome.identity.getProfileUserInfo(function(UserInfo) {
         })
         .catch(err => {console.error ("DB | ERROR" + err.stack);})
   });
+
+
+  //GET BROWSER WINDOW & TAB STRUCTURE
+  // BrowserAPI.getAllWindows()
+  //   .then (
+  //    result => (
+  //      log(Date.now(),"structure", "initialize", "initialize", {result})
+  //       .catch(err => {console.error ("DB | ERROR" + err.stack);})
+  //    ),
+  //    error => console.log("error!")
+  //   )

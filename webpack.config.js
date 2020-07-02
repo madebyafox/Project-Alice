@@ -25,7 +25,7 @@ var options = {
     options: path.join(__dirname, "src", "js", "options.js"),
     background: path.join(__dirname, "src", "js", "background.js"),
     main: path.join(__dirname, "src", "js", "main.js"),
-    database: path.join(__dirname, "src", "js/database", "database.js")
+    database: path.join(__dirname, "src", "js/utils", "database.js")
   },
   output: {
     path: path.join(__dirname, "build"),
