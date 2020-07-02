@@ -5,14 +5,13 @@
 
 "use strict";
 
+import {DB, dumpDB, log} from "./database/database"; //DEXIE DB object
+import '../img/on.png';
+import '../img/off.png';
+
 //INITIALIZE STATE
 localStorage.setItem('logging', true);
 localStorage.setItem('recording', false);
-
-import {DB, dumpDB, log} from "./database/database"; //DEXIE DB object
-
-import '../img/on.png';
-import '../img/off.png';
 
 //NOTE: MAIN PAGE CURRENTLY DISABLED
 // chrome.browserAction.onClicked.addListener(function(activeTab)
@@ -45,15 +44,6 @@ let BrowserAPI = {
       });
   }
 }
-
-//GET BROWSER WINDOW & TAB STRUCTURE
-BrowserAPI.getAllWindows().then (
-   result => (
-     log("structure", "initialize", "version "+chrome.runtime.getManifest().version , result)
-      .catch(err => {console.error ("DB | ERROR" + err.stack);})
-   ),
-   error => console.log("error!")
- );
 
 // HANDLE WINDOW EVENTS
 const WINDOW_EVENTS = [ //https://developer.chrome.com/extensions/windows#event-onCreated
@@ -178,3 +168,17 @@ WEBNAV_EVENTS.forEach(function(e) {
       console.error(chrome.i18n.getMessage('inWindowsHandlerError'), e);}
   });
 });
+
+//ON EXTENSION INSTALL, LOG CURRENT STRUCTURE AND BROWSER information
+//GET BROWSER WINDOW & TAB STRUCTURE
+BrowserAPI.getAllWindows().then (
+   result => (
+     log("structure", "initialize", "version "+chrome.runtime.getManifest().version , result)
+      .catch(err => {console.error ("DB | ERROR" + err.stack);})
+
+      // log ("structure")
+
+
+   ),
+   error => console.log("error!")
+ );

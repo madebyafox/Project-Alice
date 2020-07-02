@@ -1,6 +1,8 @@
 import "../css/popup.css";
 import { dumpDB, eraseDB, log } from "./database/database";
 import '../img/record.png';
+import '../img/on.png';
+import '../img/off.png';
 
 window.addEventListener("load", function() {
 
@@ -58,21 +60,23 @@ function uToggleLogging(){
       chrome.browserAction.setIcon({path : "off.png"});
       document.getElementById("doLogToggle").innerHTML="Start Logging";
       localStorage.setItem('logging', false);
+      log("meta", "logging", "stop", {time:Date.now()})
+        .catch(err => {console.error ("DB | ERROR" + err.stack);});
 
-      //STOP RECORDING -- JK can't turn off logging if recording is on
-      // localStorage.setItem('recording', false);
-      // log("structure", "recording", "stop", {time:Date.now()})
-        // .catch(err => {console.error ("DB | ERROR" + err.stack);});
+      //TODO: LOG STRUCTURE
 
     }
   else {
-      chrome.browserAction.setIcon({
-        path : "on.png"
-      });
+      chrome.browserAction.setIcon({path : "on.png"});
       document.getElementById("doLogToggle").innerHTML="Stop Logging";
       localStorage.setItem('logging', true);
-      log("navigation", "ui", "START LOGGING", {time:Date.now()})
+
+      //LOG STATUS
+      log("meta", "logging", "start", {time:Date.now()})
         .catch(err => {console.error ("DB | ERROR" + err.stack);});
+
+      //TODO: LOG STRUCTURE
+
     }
   }
 
@@ -97,13 +101,13 @@ function uSave(){
   let stage = (document.getElementById("doWrite").placeholder);
   if (stage == "Enter annotations here"){
     //LOG AS ANNOTATION
-    log("recording", "ui", "annotation", {time:Date.now(), result:text})
+    log("meta", "ui", "annotation", {time:Date.now(), result:text})
       .catch(err => {console.error ("DB | ERROR" + err.stack);});
     window.close();
   }
   else {
     //LOG AS GOAL
-    log("recording", "ui", "goal", {time:Date.now(), result:text})
+    log("meta", "ui", "goal", {time:Date.now(), result:text})
       .catch(err => {console.error ("DB | ERROR" + err.stack);});
 
     //UPDATE INPUT UI
@@ -118,11 +122,16 @@ function uRecord(){
   switch(recording){
     case "false": //start recording!
 
-      //LOG STRUCTURE
-      log("structure", "recording", "start", {time:Date.now()})
-        .catch(err => {console.error ("DB | ERROR" + err.stack);});
+      //LOG STATUS
+      log("meta", "recording", "start", {time:Date.now()})
+      .catch(err => {console.error ("DB | ERROR" + err.stack);});
       localStorage.setItem('recording', true);
       localStorage.setItem('logging', true);
+
+      //TODO: LOG STRUCTURE
+      // log("structure", "recording", "start", {time:Date.now()})
+        // .catch(err => {console.error ("DB | ERROR" + err.stack);});
+
 
       //SET RECORDING ICON
       chrome.browserAction.setIcon({
@@ -143,17 +152,19 @@ function uRecord(){
       document.getElementById("doErase").style.display="none";
 
       break;
-    case "true": //stop recording!
+    case "true": //stop recording but keep logging
 
-      //LOG STRUCTURE
-      log("structure", "recording", "stop", {time:Date.now()})
+      //TODO LOG STRUCTURE
+      // log("structure", "recording", "stop", {time:Date.now()})
+        // .catch(err => {console.error ("DB | ERROR" + err.stack);});
+
+      //LOG STATUS
+      log("meta", "recording", "stop", {time:Date.now()})
         .catch(err => {console.error ("DB | ERROR" + err.stack);});
       localStorage.setItem('recording', false);
 
       //SET LOGGING
-      chrome.browserAction.setIcon({
-        path : "on.png"
-      });
+      chrome.browserAction.setIcon({path : "on.png"});
       localStorage.setItem('logging', true);
       document.getElementById("doLogToggle").innerHTML="Stop Logging";
 

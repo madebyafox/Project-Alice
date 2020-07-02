@@ -9,7 +9,7 @@ const DB = new Dexie('hatter');
 DB.version(1).stores({
   navigation: 'id, handler, event',
   structure:'id,handler, event',
-  recording:'id,handler, event'
+  meta:'id,handler, event'
 });
 
 //EXPORT database to a file
@@ -28,7 +28,7 @@ async function dumpDB(){
 async function eraseDB(){
   DB.navigation.clear();
   DB.structure.clear();
-  DB.recording.clear();
+  DB.meta.clear();
   alert("Your logging data has been erased");
 }
 
@@ -53,12 +53,12 @@ async function log(type, handler, sevent, data) {
         data: data.result
       });
         break;
-      case "recording":
-        var logged = await DB.recording.put({
+      case "meta":
+        var logged = await DB.meta.put({
           id: data.time,
           handler: handler,
           event: sevent,
-          data: data.result
+          data: data
         });
       // console.log("LOGGED :" + logged);
         break;
