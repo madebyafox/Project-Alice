@@ -2,23 +2,26 @@ import "../css/popup.css";
 import { dumpDB, eraseDB, log } from "./database/database";
 
 window.addEventListener("load", function() {
-  let logging = localStorage.getItem('logging');
-  let recording = localStorage.getItem('recording');
 
   //ADD EVENT LISTENERS
-  document.getElementById("doLogToggle").onclick = function(){uTLog()};
+  document.getElementById("doLogToggle").onclick = function(){uToggleLogging()};
   document.getElementById("doExport").onclick = function(){uDownloadFile()};
   document.getElementById("doErase").onclick = function(){uErase();};
   document.getElementById("doRecord").onclick = function(){uRecord();};
   document.getElementById("doSave").onclick = function(){uSave();};
 
-  //SET TOGGLE TEXT
+  //IS user currenting logging and recording?
+  let logging = localStorage.getItem('logging');
+  let recording = localStorage.getItem('recording');
+
+  //SET LOGGING TOGGLE BUTTON TEXT
   if (logging == "true"){
     document.getElementById("doLogToggle").innerHTML="Stop Logging";}
   else { document.getElementById("doLogToggle").innerHTML="Start Logging";}
 
   //SET BUTTON VISIBILITY
   if (recording == "true"){
+    //hide all but recording button
     document.getElementById("doLogToggle").style.display="none";
     document.getElementById("doExport").style.display="none";
     document.getElementById("doErase").style.display="none";
@@ -33,6 +36,7 @@ window.addEventListener("load", function() {
 
 });
 
+//DOWNLOAD all date to json file
 function uDownloadFile() {
   alert("Downloading File");
   dumpDB()
@@ -42,25 +46,22 @@ function uDownloadFile() {
     });
 }
 
-function uTLog(){
+//TOGGLE status of logging
+function uToggleLogging(){
   let logging = localStorage.getItem('logging');
   let recording = localStorage.getItem('recording');
   // alert (typeof(state));
-  if (logging == "true"){
-      chrome.browserAction.setIcon({
-        path : "off.png"
-      });
-      document.getElementById("doLogToggle").innerHTML="Start Logging";
 
+  if (logging == "true"){
       //STOP LOGGING
+      chrome.browserAction.setIcon({path : "off.png"});
+      document.getElementById("doLogToggle").innerHTML="Start Logging";
       localStorage.setItem('logging', false);
-      log("navigation", "ui", "STOP LOGGING", {time:Date.now()})
-        .catch(err => {console.error ("DB | ERROR" + err.stack);});
 
       //STOP RECORDING
-      localStorage.setItem('recording', false);
-      log("structure", "recording", "stop", {time:Date.now()})
-        .catch(err => {console.error ("DB | ERROR" + err.stack);});
+      // localStorage.setItem('recording', false);
+      // log("structure", "recording", "stop", {time:Date.now()})
+        // .catch(err => {console.error ("DB | ERROR" + err.stack);});
 
 
     }
