@@ -60,7 +60,7 @@ function uToggleLogging(){
       chrome.browserAction.setIcon({path : "off.png"});
       document.getElementById("doLogToggle").innerHTML="Start Logging";
       localStorage.setItem('logging', false);
-      log("meta", "logging", "stop", {time:Date.now()})
+      log(Date.now(), "meta", "logging", "stop")
         .catch(err => {console.error ("DB | ERROR" + err.stack);});
 
       //TODO: LOG STRUCTURE
@@ -72,14 +72,17 @@ function uToggleLogging(){
       localStorage.setItem('logging', true);
 
       //LOG STATUS
-      log("meta", "logging", "start", {time:Date.now()})
+      log(Date.now(),"meta", "logging", "start")
         .catch(err => {console.error ("DB | ERROR" + err.stack);});
 
       //TODO: LOG STRUCTURE
 
     }
+
+
   }
 
+//ERASE all data from the indexedDB
 function uErase(){
   alert("Downloading your data first");
   dumpDB()
@@ -94,6 +97,7 @@ function uErase(){
     });
 }
 
+//SAVE the annotation
 function uSave(){
   let text = document.getElementById("doWrite").value;
 
@@ -101,13 +105,13 @@ function uSave(){
   let stage = (document.getElementById("doWrite").placeholder);
   if (stage == "Enter annotations here"){
     //LOG AS ANNOTATION
-    log("meta", "ui", "annotation", {time:Date.now(), result:text})
+    log(Date.now(), "meta", "recording", "annotation", {result:text})
       .catch(err => {console.error ("DB | ERROR" + err.stack);});
     window.close();
   }
   else {
     //LOG AS GOAL
-    log("meta", "ui", "goal", {time:Date.now(), result:text})
+    log(Date.now(),"meta", "recording", "goal", {result:text})
       .catch(err => {console.error ("DB | ERROR" + err.stack);});
 
     //UPDATE INPUT UI
@@ -116,6 +120,7 @@ function uSave(){
   }
 }
 
+//TOGGLE status of session recording
 function uRecord(){
   let recording = localStorage.getItem('recording');
 
@@ -123,7 +128,7 @@ function uRecord(){
     case "false": //start recording!
 
       //LOG STATUS
-      log("meta", "recording", "start", {time:Date.now()})
+      log(Date.now(), "meta", "recording", "start")
       .catch(err => {console.error ("DB | ERROR" + err.stack);});
       localStorage.setItem('recording', true);
       localStorage.setItem('logging', true);
@@ -159,7 +164,7 @@ function uRecord(){
         // .catch(err => {console.error ("DB | ERROR" + err.stack);});
 
       //LOG STATUS
-      log("meta", "recording", "stop", {time:Date.now()})
+      log(Date.now(), "meta", "recording", "stop")
         .catch(err => {console.error ("DB | ERROR" + err.stack);});
       localStorage.setItem('recording', false);
 

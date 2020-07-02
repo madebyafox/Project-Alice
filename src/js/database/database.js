@@ -33,12 +33,12 @@ async function eraseDB(){
 }
 
 //LOG to the database
-async function log(type, handler, sevent, data) {
+async function log(time, type, handler, sevent, data) {
     // console.log("DB | trying to logToDB | "+type);
     switch(type){
       case "navigation":
         var logged = await DB.navigation.put({
-          id: data.time,
+          id: time,
           handler: handler,
           event: sevent,
           data: data.result
@@ -47,15 +47,15 @@ async function log(type, handler, sevent, data) {
         break;
       case "structure":
       var logged = await DB.structure.put({
-        id: data.time,
+        id: time,
         handler: handler,
         event: sevent,
-        data: data.result
+        data: data
       });
         break;
       case "meta":
         var logged = await DB.meta.put({
-          id: data.time,
+          id: time,
           handler: handler,
           event: sevent,
           data: data

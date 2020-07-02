@@ -9,12 +9,14 @@ Taming the madness of exploratory search
 * export database to file
 * toggl logging status on/off
 * clear db on demmand
+* track toggles in logging
+* let user designate start/end of a "search session"
 
 ## TODO
 
-* track toggles in logging
+
 * log a user identifier
-* let user designate start/end of a "search session"
+
 * support realtime annotation
 
 

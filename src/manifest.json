@@ -18,7 +18,9 @@
      "webNavigation",
      "tabs",
      "windows",
-     "storage"
+     "storage",
+     "identity",
+     "identity.email"
    ],
 
    "browser_action": {

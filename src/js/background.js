@@ -58,7 +58,7 @@ WINDOW_EVENTS.forEach(function(e) {
       if (localStorage.getItem('logging') == "true" ) {
         let currData = {windowId:data}
         let time = Date.now();
-        log("navigation", "windows", e, {time:time, result:currData})
+        log(time, "navigation", "windows", e, {result:currData})
           .catch(err => {console.error ("DB | ERROR" + err.stack);});
         console.log(chrome.i18n.getMessage('inWindowsHandler'), e, time, data);
       }
@@ -89,20 +89,20 @@ TAB_EVENTS.forEach(function(e) {
         let time = Date.now()
         switch (e){
           case "onCreated" :
-            log("navigation", "tabs", e, {time:time, result:{tab:p1}})
+            log(time, "navigation", "tabs", e, {result:{tab:p1}})
               .catch(err => {console.error ("DB | ERROR" + err.stack);});
             console.log(chrome.i18n.getMessage('inTabsHandler'), e, time, p1);
             break;
 
           case "onActivated" :
-            log("navigation", "tabs", e, {time:time, result:{activeInfo:p1}})
+            log(time, "navigation", "tabs", e, {result:{activeInfo:p1}})
                 .catch(err => {console.error ("DB | ERROR" + err.stack);});
             console.log(chrome.i18n.getMessage('inTabsHandler'), e, time, p1);
             break;
 
           case "onUpdated" :
             if (p2.url) {
-              log("navigation", "tabs", e, {time:time, result:{tabId:p1, changeInfo:p2, tab:p3}})
+              log(time, "navigation", "tabs", e, {result:{tabId:p1, changeInfo:p2, tab:p3}})
                 .catch(err => {console.error ("DB | ERROR" + err.stack);});
               console.log(chrome.i18n.getMessage('inTabsHandler'), e, time, p1);
             }
@@ -115,7 +115,7 @@ TAB_EVENTS.forEach(function(e) {
           case "onAttached" :
           case "onRemoved" :
           case "onReplaced" :
-            log("navigation", "tabs", e, {time:time, result:{tabId:p1, DELTAS:p2}})
+            log(time, "navigation", "tabs", e, {result:{tabId:p1, DELTAS:p2}})
               .catch(err => {console.error ("DB | ERROR" + err.stack);});
             console.log(chrome.i18n.getMessage('inTabsHandler'), e, time, p1);
             break;
@@ -154,7 +154,7 @@ WEBNAV_EVENTS.forEach(function(e) {
     if (typeof data) {
       if (localStorage.getItem('logging') == "true" ) {
         if (data.frameId == 0) {
-          log("navigation", "webNav", e, {time:time, result:data})
+          log(time, "navigation", "webNav", e, {result:data})
             .catch(err => {console.error ("DB | ERROR" + err.stack);});
           console.log(chrome.i18n.getMessage('inNavHandler'), e, time, data);
         }
@@ -171,14 +171,44 @@ WEBNAV_EVENTS.forEach(function(e) {
 
 //ON EXTENSION INSTALL, LOG CURRENT STRUCTURE AND BROWSER information
 //GET BROWSER WINDOW & TAB STRUCTURE
-BrowserAPI.getAllWindows().then (
+BrowserAPI.getAllWindows()
+  .then (
    result => (
-     log("structure", "initialize", "version "+chrome.runtime.getManifest().version , result)
+     log(Date.now(),"structure", "initialize", "initialize", {result})
       .catch(err => {console.error ("DB | ERROR" + err.stack);})
-
-      // log ("structure")
-
-
    ),
    error => console.log("error!")
- );
+  )
+
+  chrome.identity.getProfileUserInfo(function(UserInfo) {
+    console.log(UserInfo);
+    // return result;
+    log(Date.now(),"meta", "initialize", "initialize",
+        {extension: chrome.runtime.getManifest().version,
+          userAgent:window.navigator.userAgent,
+          user: UserInfo
+        })
+        .catch(err => {console.error ("DB | ERROR" + err.stack);})
+  })
+
+  // .then (
+    // chrome.identity.getProfileUserInfo(function(result) {
+    //   console.log(JSON.stringify(result));
+    //   console.log(result);
+    //   // return result;
+    // })
+  //   return new Promise(
+  //     function (resolve, reject){
+  //       chrome.identity.getProfileUserInfo(function(result){
+  //         resolve(result);
+  //         reject("ERROR");
+  //       });
+  //     });
+  // ).then (
+  //   result => log(Date.now(),"meta", "initialize", "initialize",
+  //     {extension: chrome.runtime.getManifest().version,
+  //       userAgent:window.navigator.userAgent,
+  //       user: result
+  //     })
+  //     .catch(err => {console.error ("DB | ERROR" + err.stack);})
+  // )
