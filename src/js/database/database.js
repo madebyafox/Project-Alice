@@ -65,5 +65,5 @@ async function log(time, type, handler, sevent, data) {
     }
   }
 
-export {DB, dumpDB, eraseDB, log};
+export {dumpDB, eraseDB, log};
 //TODO: figure out correct export format
