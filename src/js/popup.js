@@ -58,11 +58,10 @@ function uToggleLogging(){
       document.getElementById("doLogToggle").innerHTML="Start Logging";
       localStorage.setItem('logging', false);
 
-      //STOP RECORDING
+      //STOP RECORDING -- JK can't turn off logging if recording is on 
       // localStorage.setItem('recording', false);
       // log("structure", "recording", "stop", {time:Date.now()})
         // .catch(err => {console.error ("DB | ERROR" + err.stack);});
-
 
     }
   else {

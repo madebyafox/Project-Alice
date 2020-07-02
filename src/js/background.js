@@ -14,6 +14,7 @@ import {DB, dumpDB, log} from "./database/database"; //DEXIE DB object
 import '../img/on.png';
 import '../img/off.png';
 
+//NOTE: MAIN PAGE CURRENTLY DISABLED
 // chrome.browserAction.onClicked.addListener(function(activeTab)
 // {
 //  let newurl = "main.html";
@@ -45,7 +46,7 @@ let BrowserAPI = {
   }
 }
 
-//GET STRUCTURE
+//GET BROWSER WINDOW & TAB STRUCTURE
 BrowserAPI.getAllWindows().then (
    result => (
      log("structure", "initialize", "version "+chrome.runtime.getManifest().version , result)
@@ -71,7 +72,7 @@ WINDOW_EVENTS.forEach(function(e) {
           .catch(err => {console.error ("DB | ERROR" + err.stack);});
         console.log(chrome.i18n.getMessage('inWindowsHandler'), e, time, data);
       }
-      else {console.log("not logging: "+ e);}
+      else {console.log("NOT LOGGING: "+ e);}
     }
     else {
       console.error(chrome.i18n.getMessage('inWindowsHandlerError'), e);}
@@ -116,7 +117,7 @@ TAB_EVENTS.forEach(function(e) {
               console.log(chrome.i18n.getMessage('inTabsHandler'), e, time, p1);
             }
             else {
-              console.log(chrome.i18n.getMessage('inTabsHandler'), "SKIPLOG "+e, time, {tabId:p1})};
+              console.log(chrome.i18n.getMessage('inTabsHandler'), "SKIP LOGGING (event)"+e, time, {tabId:p1})};
             break;
 
           case "onMoved" :
@@ -132,7 +133,7 @@ TAB_EVENTS.forEach(function(e) {
             console.log("fell through case: ", e);
         }
       }
-      else {console.log("not logging: "+ e);}
+      else {console.log("NOT LOGGING: "+ e);}
     }
     else {
       console.error(chrome.i18n.getMessage('inTabsHandlerError'), e);}
@@ -168,10 +169,10 @@ WEBNAV_EVENTS.forEach(function(e) {
           console.log(chrome.i18n.getMessage('inNavHandler'), e, time, data);
         }
         else {
-          console.log(chrome.i18n.getMessage('inNavHandler'), "SKIPLOG "+e, time, data);
+          console.log(chrome.i18n.getMessage('inNavHandler'), "SKIP LOGGING (not main frame)"+e, time, data);
         }
       }
-      else {console.log("not logging: "+ e);}
+      else {console.log("NOT LOGGING: "+ e);}
     }
     else {
       console.error(chrome.i18n.getMessage('inWindowsHandlerError'), e);}

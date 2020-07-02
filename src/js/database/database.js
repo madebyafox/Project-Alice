@@ -4,6 +4,8 @@ import streamSaver from '../database/streamsaver'; //for generating files
 
 
 const DB = new Dexie('hatter');
+
+//CREATE 3 collections
 DB.version(1).stores({
   navigation: 'id, handler, event',
   structure:'id,handler, event',
@@ -41,7 +43,7 @@ async function log(type, handler, sevent, data) {
           event: sevent,
           data: data.result
         });
-        console.log("LOGGED :" + logged);
+        // console.log("LOGGED :" + logged);
         break;
       case "structure":
       var logged = await DB.structure.put({
@@ -50,16 +52,16 @@ async function log(type, handler, sevent, data) {
         event: sevent,
         data: data.result
       });
-      break;
+        break;
       case "recording":
-      var logged = await DB.recording.put({
-        id: data.time,
-        handler: handler,
-        event: sevent,
-        data: data.result
-      });
-      console.log("LOGGED :" + logged);
-      break;
+        var logged = await DB.recording.put({
+          id: data.time,
+          handler: handler,
+          event: sevent,
+          data: data.result
+        });
+      // console.log("LOGGED :" + logged);
+        break;
     }
   }
 
