@@ -21,7 +21,18 @@ async function getAllWindows (){
       });
 }
 
-export {getAllWindows};
+async function getIdentity(){
+  return new Promise(
+    function (resolve, reject){
+      chrome.identity.getProfileUserInfo(function(result) {
+        console.log(result);
+        resolve(result);
+        reject("identity error:" +result);
+      });
+    })
+}
+
+export {getAllWindows, getIdentity};
 
 //OLD SYNTAX
 //const BrowserAPI = {

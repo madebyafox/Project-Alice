@@ -6,7 +6,7 @@
 "use strict";
 
 import {dumpDB, log} from "./utils/database";
-import {getAllWindows} from "./utils/browserAPI";
+import {getAllWindows, getIdentity} from "./utils/browserAPI";
 import '../img/on.png';
 import '../img/off.png';
 
@@ -158,19 +158,32 @@ getAllWindows()
       .catch(err => {console.error ("DB | ERROR" + err.stack);})
    ),
    error => console.log("error! "+error)
-  )
+ );
 
 //LOG BROWSER and USER information
-chrome.identity.getProfileUserInfo(function(UserInfo) {
-    console.log(UserInfo);
-    // return result;
-    log(Date.now(),"meta", "initialize", "initialize",
-        {extension: chrome.runtime.getManifest().version,
+getIdentity()
+  .then (
+    result => (
+      log(Date.now(), "meta", "initialize", "initialize",
+        { extension: chrome.runtime.getManifest().version,
           userAgent:window.navigator.userAgent,
-          user: UserInfo
+          user: result
         })
         .catch(err => {console.error ("DB | ERROR" + err.stack);})
-  });
+    )
+  );
+
+//LOG BROWSER and USER information
+// chrome.identity.getProfileUserInfo(function(UserInfo) {
+//     console.log(UserInfo);
+//     // return result;
+//     log(Date.now(),"meta", "initialize", "initialize",
+//         {extension: chrome.runtime.getManifest().version,
+//           userAgent:window.navigator.userAgent,
+//           user: UserInfo
+//         })
+//         .catch(err => {console.error ("DB | ERROR" + err.stack);})
+//   });
 
 
   //GET BROWSER WINDOW & TAB STRUCTURE
