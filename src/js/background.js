@@ -5,7 +5,11 @@
 
 "use strict";
 
-import {dumpDB, log} from "./utils/database";
+// import 'bootstrap';
+// import 'bootstrap/dist/css/bootstrap.css';
+
+
+import {dumpDB, log} from "./utils/database"
 import {getAllWindows, getIdentity} from "./utils/browserAPI";
 import '../img/on.png';
 import '../img/off.png';
@@ -14,17 +18,31 @@ import '../img/off.png';
 localStorage.setItem('logging', true);
 localStorage.setItem('recording', false);
 
-//NOTE: MAIN PAGE CURRENTLY DISABLED
-// chrome.browserAction.onClicked.addListener(function(activeTab)
-// {
-//  let newurl = "main.html";
-//   chrome.tabs.create({ url: newurl });
-// });
 
 if (!('indexedDB' in window)) {
     alert('This browser doesn\'t support IndexedDB, and cannot support this extension');
 }
 
+//ADD LISTENER FOR KEYBOARD SHORTCUT COMMAND
+chrome.commands.onCommand.addListener(function(command) {
+  // console.log('Command:', command);
+  if (command == "annotate")
+  {
+    console.log("annotating");
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {type: "openModal"});
+        console.log("TRYING!");
+    });
+
+    // var iframe  = document.createElement ('iframe');
+    // iframe.src  = chrome.extension.getURL ('annotate.html');
+    // document.body.appendChild (iframe);
+
+
+    let newurl = "main.html";
+    chrome.tabs.create({ url: newurl });
+  }
+});
 
 // HANDLE WINDOW EVENTS
 const WINDOW_EVENTS = [ //https://developer.chrome.com/extensions/windows#event-onCreated
@@ -172,26 +190,3 @@ getIdentity()
         .catch(err => {console.error ("DB | ERROR" + err.stack);})
     )
   );
-
-//LOG BROWSER and USER information
-// chrome.identity.getProfileUserInfo(function(UserInfo) {
-//     console.log(UserInfo);
-//     // return result;
-//     log(Date.now(),"meta", "initialize", "initialize",
-//         {extension: chrome.runtime.getManifest().version,
-//           userAgent:window.navigator.userAgent,
-//           user: UserInfo
-//         })
-//         .catch(err => {console.error ("DB | ERROR" + err.stack);})
-//   });
-
-
-  //GET BROWSER WINDOW & TAB STRUCTURE
-  // BrowserAPI.getAllWindows()
-  //   .then (
-  //    result => (
-  //      log(Date.now(),"structure", "initialize", "initialize", {result})
-  //       .catch(err => {console.error ("DB | ERROR" + err.stack);})
-  //    ),
-  //    error => console.log("error!")
-  //   )

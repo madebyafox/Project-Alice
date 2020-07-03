@@ -25,7 +25,8 @@ var options = {
     options: path.join(__dirname, "src", "js", "options.js"),
     background: path.join(__dirname, "src", "js", "background.js"),
     main: path.join(__dirname, "src", "js", "main.js"),
-    database: path.join(__dirname, "src", "js/utils", "database.js")
+    database: path.join(__dirname, "src", "js/utils", "database.js"),
+    annotate: path.join(__dirname, "src", "js/utils", "annotate.js")
   },
   output: {
     path: path.join(__dirname, "build"),
@@ -33,10 +34,14 @@ var options = {
   },
   module: {
     rules: [
+      // {
+      //   test: /\.css$/,
+      //   loader: "style-loader!css-loader",
+      //   exclude: /node_modules/
+      // },
       {
         test: /\.css$/,
-        loader: "style-loader!css-loader",
-        exclude: /node_modules/
+        use: ['style-loader', 'css-loader']
       },
       {
         test: new RegExp('.(' + fileExtensions.join('|') + ')$'),
@@ -51,13 +56,21 @@ var options = {
     ]
   },
   resolve: {
-    alias: alias
+    alias: alias,
+    // extensions: ['.js']
   },
   plugins: [
     // clean the build folder
     new CleanWebpackPlugin(),
     // expose and write the allowed env vars on the compiled bundle
     new webpack.EnvironmentPlugin(["NODE_ENV"]),
+    new webpack.ProvidePlugin({
+        jQuery: 'jquery',
+        $: 'jquery',
+        'window.jQuery': 'jquery',
+        // d3: 'd3',
+        Popper: ['popper.js', 'default']
+      }),
     new CopyWebpackPlugin([{
       from: "src/manifest.json",
       transform: function (content, path) {
@@ -69,6 +82,11 @@ var options = {
         }))
       }
     }]),
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, "src", "annotate.html"),
+      filename: "annotate.html",
+      chunks: ["annotate"]
+    }),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, "src", "popup.html"),
       filename: "popup.html",

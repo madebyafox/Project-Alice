@@ -20,14 +20,29 @@
      "windows",
      "storage",
      "identity",
-     "identity.email"
+     "identity.email",
+     "activeTab"
    ],
-
    "browser_action": {
      "default_title": "HATTER",
      "default_icon": "on.png",
      "default_popup": "popup.html"
     },
-
+   "commands": {
+      "annotate": {
+       "suggested_key": {
+          "default": "Ctrl+0",
+          "windows": "Ctrl+0",
+          "mac": "Command+0"
+        },
+       "description": "Toggle feature foo"
+      }
+    },
+   "content_scripts": [
+    {
+      "matches": ["https://*/*"],
+      "js":["annotate.bundle.js"],
+      "run_at":"document_end"
+    }],
    "content_security_policy": "script-src 'self' 'unsafe-eval' https://unpkg.com https://code.jquery.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://stackpath.bootstrapcdn.com; object-src 'self'"
  }

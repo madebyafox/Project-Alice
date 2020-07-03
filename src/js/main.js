@@ -1,10 +1,10 @@
 import '../css/styles.css'
 import '../css/svg-styles.css'
+import * as d3 from 'd3';
 
 //NOTE: ARCHIVED CODE, NOT USED IN HATTER v0.2
 //USES https://developer.chrome.com/extensions/windows
 
-//note: imported d3 library (main) in main.html
 const width = 954;
 const currWindowDiv = "#thisWindowDiv";  // TODO: don't hardcode this
 const allWindowDiv = "#allWindowsDiv"//TODO: don't hardcode this

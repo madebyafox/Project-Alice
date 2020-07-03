@@ -21,7 +21,11 @@
     "write-file-webpack-plugin": "4.5.1"
   },
   "dependencies": {
+    "bootstrap": "^4.5.0",
+    "d3": "^5.16.0",
     "dexie": "^3.0.1",
-    "dexie-export-import": "^1.0.0-rc.2"
+    "dexie-export-import": "^1.0.0-rc.2",
+    "jquery": "^3.5.1",
+    "popper.js": "^1.16.1"
   }
 }
