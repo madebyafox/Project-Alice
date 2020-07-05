@@ -21,7 +21,10 @@
      "storage",
      "identity",
      "identity.email",
-     "activeTab"
+     "activeTab",
+     "http://*/",
+     "https://*/"
+
    ],
    "browser_action": {
      "default_title": "HATTER",
@@ -47,7 +50,7 @@
     },
    "content_scripts": [
     {
-      "matches": ["https://*/*","http://*/"],
+      "matches": ["<all_urls>"],
       "js":["contentscript.bundle.js"],
       "run_at":"document_idle"
     }

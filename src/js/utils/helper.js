@@ -3,7 +3,7 @@
 
 async function makeAnnotation(){
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-  console.log(tabs[0].url);
+  console.log("annotating: "+ tabs[0].url);
   if (tabs[0] == undefined){
     console.log("current tab is undefined!");
   }
@@ -17,6 +17,7 @@ async function makeAnnotation(){
     });
   }
   else { //current tab is not devTools or other extension-specific page
+    // chrome.tabs.sendMessage(tabs[0].id, {type: "openModal"});
     chrome.tabs.sendMessage(tabs[0].id, {type: "openModal"});
     console.log("I sent a message");
   }

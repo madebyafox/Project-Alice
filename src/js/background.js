@@ -20,13 +20,13 @@ if (!('indexedDB' in window)) {
     alert('This browser doesn\'t support IndexedDB, and cannot support this extension');
 }
 
-// chrome.tabs.onActivated.addListener(function(tabId, changeInfo, tab) {
-//   console.log("CHANGED TABS");
-// });
-
-// chrome.windows.onFocusChanged.addListener(function() {
-//   console.log("CHANGED WINDOWS");
-// });
+//LISTEN for keyboard shortcut commands
+chrome.commands.onCommand.addListener(function(command) {
+  console.log('Command:', command);
+  if (command == "annotate") {
+    makeAnnotation();
+  }
+});
 
 //LISTEN for annotations from contentscript
 chrome.runtime.onMessage.addListener(
@@ -34,55 +34,33 @@ chrome.runtime.onMessage.addListener(
     console.log(sender.tab ?
                 "from a content script:" + sender.tab.url :
                 "from the extension");
+    sendResponse({ result: "any response from background" });
     if (request.type == "annotation"){
       log(Date.now(), "meta", "shortcut", "annotation", {result:request.result})
         .catch(err => {console.error ("DB | ERROR" + err.stack);});
-    } return true;
+    }
+    return true;
  });
 
-//LISTEN for weNavigation events and trigger contentscript
+//SEEMS  to work but drags to the system to a halt
+//ON EXTENSION INITIALIZATION inject contentscript into all tabs
+// chrome.tabs.query( {}, function(tabs) {
+//   for (let i in tabs)
+//   {
+//     console.log(tabs[i])
+//     chrome.tabs.executeScript(tabs[i].id,{file:"contentscript.bundle.js"},function(){console.log("running")});
+//     chrome.tabs.sendMessage(tabs[i].id, {type: "refresh"});
+//     console.log("I sent a message");
+//   }
+// });
+
+// chrome.tabs.executeScript({file:"contentscript.bundle.js"});
+
+// //LISTEN for weNavigation events and trigger contentscript
 chrome.tabs.onActivated.addListener(function (activeInfo){
-  console.log("trying to run content script");
-  // chrome.tabs.executeScript(null,{file:"contentscript.bundle.js"});
+  console.log("activating script: "+activeInfo);
+  chrome.tabs.executeScript(null,{file:"contentscript.bundle.js"});
 });
-
-//LISTEN for keyboard shortcut commands
-chrome.commands.onCommand.addListener(function(command) {
-  // console.log('Command:', command);
-  if (command == "annotate")
-  {
-    console.log("CMD+0");
-
-    // chrome.windows.getCurrent(function (window){
-    //   console.log(window);
-    // })
-
-    // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    //   console.log(tabs[0].url);
-    //   if (tabs[0] == undefined){
-    //     console.log("current tab is undefined!");
-    //   }
-    //   else if (tabs[0].url.match(/chrome:\/\/\w+\//g))
-    //   {
-    //     console.log ("CHROME PAGE");
-    //     // chrome.tabs.create({url:"popup.html"});
-    //     // chrome.tabs.executeScript({file:"contentscript.js", runAt:"document_start"})
-    //   }
-    //   else { //current tab is not devTools or other extension-specific page
-    //     chrome.tabs.sendMessage(tabs[0].id, {type: "openModal"});
-    //   }
-    // });
-    makeAnnotation();
-
-    // var iframe  = document.createElement ('iframe');
-    // iframe.src  = chrome.extension.getURL ('annotate.html');
-    // document.body.appendChild (iframe);
-
-    // let newurl = "annotate.html";
-    // chrome.tabs.create({ url: newurl });
-  }
-});
-
 
 // HANDLE WINDOW EVENTS
 const WINDOW_EVENTS = [ //https://developer.chrome.com/extensions/windows#event-onCreated
