@@ -13,12 +13,13 @@
 
   <!-- <script src="popup.bundle.js"></script> -->
 </head>
-<body>
+<body style="width: 100%">
 
   <div style ="margin: 10px 10px 10px 10px" class="btn-group-vertical">
     <button id="doLogToggle" class="btn btn-outline-dark btn-sm text-nowrap" title="Toggle state of data logging" type="button"></button>
     <button id="doExport" class="btn btn-outline-dark btn-sm text-nowrap" title="Export all data to file and download" type="button">Export File</button>
     <button id="doErase" class="btn btn-outline-dark btn-sm text-nowrap" title = "Remove all data from database" type="button">Erase Data</button>
+    <button id="doAnnotate" class="btn btn-outline-dark btn-sm text-nowrap" title = "Leave yourself a message" type="button">Annotate</button>
     <button id="doRecord" class="btn btn-outline-dark btn-sm text-nowrap" title = "Log a dedicated search session" type="button">Record Session</button>
   </div>
 
@@ -27,7 +28,6 @@
     <textarea  id="doWrite" style="height:200px" class="form-control" placeholder="What is the goal of your search?" aria-label="With textarea"></textarea>
     <button id="doSave" class="btn btn-outline-dark btn-sm text-nowrap" type="button">Save</button>
   </div>
-
 
 </body>
 </html>

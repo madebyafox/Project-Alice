@@ -43,7 +43,7 @@ async function log(time, type, handler, sevent, data) {
           event: sevent,
           data: data.result
         });
-        // console.log("LOGGED :" + logged);
+        // console.log("LOGGED NAV:" + logged);
         break;
       case "structure":
       var logged = await DB.structure.put({
@@ -52,6 +52,7 @@ async function log(time, type, handler, sevent, data) {
         event: sevent,
         data: data
       });
+        // console.log("LOGGED STRUCTURE:" + logged);
         break;
       case "meta":
         var logged = await DB.meta.put({
@@ -60,7 +61,7 @@ async function log(time, type, handler, sevent, data) {
           event: sevent,
           data: data
         });
-      // console.log("LOGGED :" + logged);
+        // console.log("LOGGED META:" + logged);
         break;
     }
   }

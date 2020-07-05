@@ -5,10 +5,7 @@
 
 "use strict";
 
-// import 'bootstrap';
-// import 'bootstrap/dist/css/bootstrap.css';
-
-
+import {makeAnnotation} from "./utils/helper"
 import {dumpDB, log} from "./utils/database"
 import {getAllWindows, getIdentity} from "./utils/browserAPI";
 import '../img/on.png';
@@ -18,31 +15,74 @@ import '../img/off.png';
 localStorage.setItem('logging', true);
 localStorage.setItem('recording', false);
 
-
+//EXTENSION REQUIRES INDEXEDDB
 if (!('indexedDB' in window)) {
     alert('This browser doesn\'t support IndexedDB, and cannot support this extension');
 }
 
-//ADD LISTENER FOR KEYBOARD SHORTCUT COMMAND
+// chrome.tabs.onActivated.addListener(function(tabId, changeInfo, tab) {
+//   console.log("CHANGED TABS");
+// });
+
+// chrome.windows.onFocusChanged.addListener(function() {
+//   console.log("CHANGED WINDOWS");
+// });
+
+//LISTEN for annotations from contentscript
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    console.log(sender.tab ?
+                "from a content script:" + sender.tab.url :
+                "from the extension");
+    if (request.type == "annotation"){
+      log(Date.now(), "meta", "shortcut", "annotation", {result:request.result})
+        .catch(err => {console.error ("DB | ERROR" + err.stack);});
+    } return true;
+ });
+
+//LISTEN for weNavigation events and trigger contentscript
+chrome.tabs.onActivated.addListener(function (activeInfo){
+  console.log("trying to run content script");
+  // chrome.tabs.executeScript(null,{file:"contentscript.bundle.js"});
+});
+
+//LISTEN for keyboard shortcut commands
 chrome.commands.onCommand.addListener(function(command) {
   // console.log('Command:', command);
   if (command == "annotate")
   {
-    console.log("annotating");
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {type: "openModal"});
-        console.log("TRYING!");
-    });
+    console.log("CMD+0");
+
+    // chrome.windows.getCurrent(function (window){
+    //   console.log(window);
+    // })
+
+    // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    //   console.log(tabs[0].url);
+    //   if (tabs[0] == undefined){
+    //     console.log("current tab is undefined!");
+    //   }
+    //   else if (tabs[0].url.match(/chrome:\/\/\w+\//g))
+    //   {
+    //     console.log ("CHROME PAGE");
+    //     // chrome.tabs.create({url:"popup.html"});
+    //     // chrome.tabs.executeScript({file:"contentscript.js", runAt:"document_start"})
+    //   }
+    //   else { //current tab is not devTools or other extension-specific page
+    //     chrome.tabs.sendMessage(tabs[0].id, {type: "openModal"});
+    //   }
+    // });
+    makeAnnotation();
 
     // var iframe  = document.createElement ('iframe');
     // iframe.src  = chrome.extension.getURL ('annotate.html');
     // document.body.appendChild (iframe);
 
-
-    let newurl = "main.html";
-    chrome.tabs.create({ url: newurl });
+    // let newurl = "annotate.html";
+    // chrome.tabs.create({ url: newurl });
   }
 });
+
 
 // HANDLE WINDOW EVENTS
 const WINDOW_EVENTS = [ //https://developer.chrome.com/extensions/windows#event-onCreated

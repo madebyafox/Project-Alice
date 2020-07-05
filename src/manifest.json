@@ -36,13 +36,21 @@
           "mac": "Command+0"
         },
        "description": "Toggle feature foo"
-      }
+     },
+     "_execute_browser_action": {
+            "suggested_key": {
+              "default": "Ctrl+B",
+              "windows": "Ctrl+B",
+              "mac": "Command+B"
+            }
+          }
     },
    "content_scripts": [
     {
-      "matches": ["https://*/*"],
-      "js":["annotate.bundle.js"],
-      "run_at":"document_end"
-    }],
+      "matches": ["https://*/*","http://*/"],
+      "js":["contentscript.bundle.js"],
+      "run_at":"document_idle"
+    }
+  ],
    "content_security_policy": "script-src 'self' 'unsafe-eval' https://unpkg.com https://code.jquery.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://stackpath.bootstrapcdn.com; object-src 'self'"
  }

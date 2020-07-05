@@ -1,6 +1,4 @@
 
-//ACCESS TO BROWSER APIS
-
 
 
 const WINDOW_TYPES = [
@@ -33,16 +31,3 @@ async function getIdentity(){
 }
 
 export {getAllWindows, getIdentity};
-
-//OLD SYNTAX
-//const BrowserAPI = {
-//   getAllWindows: function(){
-//     return new Promise(
-//       function (resolve, reject){
-//         chrome.windows.getAll(OPTS, function(result){
-//           resolve({time:Date.now(), result:result});
-//           reject("window retrieval error");
-//         });
-//       });
-//   }
-// }

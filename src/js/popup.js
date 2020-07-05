@@ -4,8 +4,10 @@ import $ from 'jquery'
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+import {makeAnnotation} from "./utils/helper"
 import { dumpDB, eraseDB, log } from "./utils/database";
 import {getAllWindows, getIdentity} from "./utils/browserAPI";
+
 import '../img/record.png';
 import '../img/on.png';
 import '../img/off.png';
@@ -17,6 +19,7 @@ window.addEventListener("load", function() {
   document.getElementById("doExport").onclick = function(){uDownloadFile()};
   document.getElementById("doErase").onclick = function(){uErase();};
   document.getElementById("doRecord").onclick = function(){uRecord();};
+  document.getElementById("doAnnotate").onclick = function(){uAnnotate();}
   document.getElementById("doSave").onclick = function(){uSave();};
 
   //IS user currenting logging and recording?
@@ -68,7 +71,7 @@ function uToggleLogging(){
       chrome.browserAction.setIcon({path : "off.png"});
       document.getElementById("doLogToggle").innerHTML="Start Logging";
       localStorage.setItem('logging', false);
-      log(Date.now(), "meta", "logging", "stop")
+      log(Date.now(), "meta", "logging", "stop","")
         .catch(err => {console.error ("DB | ERROR" + err.stack);});
 
       //LOG STRUCTURE
@@ -87,7 +90,7 @@ function uToggleLogging(){
       localStorage.setItem('logging', true);
 
       //LOG STATUS
-      log(Date.now(),"meta", "logging", "start")
+      log(Date.now(),"meta", "logging", "start","")
         .catch(err => {console.error ("DB | ERROR" + err.stack);});
 
       //LOG STRUCTURE
@@ -239,4 +242,10 @@ function uRecord(){
       document.getElementById("doErase").style.display="flex";
       break;
   }
+}
+
+//ANNOTATE
+function uAnnotate(){
+  makeAnnotation();
+  window.close();
 }

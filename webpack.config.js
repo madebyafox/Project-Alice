@@ -25,8 +25,11 @@ var options = {
     options: path.join(__dirname, "src", "js", "options.js"),
     background: path.join(__dirname, "src", "js", "background.js"),
     main: path.join(__dirname, "src", "js", "main.js"),
+    contentscript: path.join(__dirname, "src", "js", "contentscript.js"),
     database: path.join(__dirname, "src", "js/utils", "database.js"),
+    helper: path.join(__dirname, "src", "js/utils", "helper.js"),
     annotate: path.join(__dirname, "src", "js/utils", "annotate.js")
+
   },
   output: {
     path: path.join(__dirname, "build"),
@@ -83,14 +86,14 @@ var options = {
       }
     }]),
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, "src", "annotate.html"),
-      filename: "annotate.html",
-      chunks: ["annotate"]
-    }),
-    new HtmlWebpackPlugin({
       template: path.join(__dirname, "src", "popup.html"),
       filename: "popup.html",
       chunks: ["popup"]
+    }),
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, "src", "blank.html"),
+      filename: "blank.html",
+      chunks: ["blank"]
     }),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, "src", "options.html"),
