@@ -11,7 +11,7 @@ async function makeAnnotation(){
   else if (tabs[0].url.match(/chrome:\/\/\w+\//g))
   {
     console.log ("CHROME PAGE");
-    chrome.tabs.create({url:"blank.html"}, function(newtab){
+    chrome.tabs.create({url:"annotate.html"}, function(newtab){
       chrome.tabs.sendMessage(newtab.id, {type: "openModal"});
       console.log("I sent a message");
     });

@@ -21,6 +21,8 @@ see https://stackoverflow.com/questions/53939205/how-to-avoid-extension-context-
 ##KNOWN ISSUES
 * annotation modal style can be overriden by source page styles, which can lead to erroneous styling (for example: on stack overflow). Recommend replacing modal code with an encapuslated webcomponent using a shadowDom (eg. semantic ui)
 
+* annotate.html page doesn't support hide on esc or click background, because the modal is declared on the html page and not with the bootstrap js options. --> investigate why $("#backdrop").on("click", function(){ isn't working 
+
 * onActivated injection approach leads to errors when triggered on chrome pages (not allowable scheme). The newpage-> annotation flow is triggered and works, but onActivated logic should filter on url so it isn't triggered on inelligible pages
 (see error : Unchecked runtime.lastError: Cannot access contents of url "chrome-extension://laookkfknpbbblfpciffpaejjkokdgca/dashboard.html". Extension manifest must request permission to access this host.
 Context)

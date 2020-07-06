@@ -13,7 +13,6 @@ import '../img/off.png';
 
 //INITIALIZE STATE
 localStorage.setItem('logging', true);
-localStorage.setItem('recording', false);
 
 //EXTENSION REQUIRES INDEXEDDB
 if (!('indexedDB' in window)) {
