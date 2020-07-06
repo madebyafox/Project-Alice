@@ -15,12 +15,12 @@ import '../img/off.png';
 window.addEventListener("load", function() {
 
   //ADD EVENT LISTENERS
-  document.getElementById("doLogToggle").onclick = function(){uToggleLogging()};
-  document.getElementById("doExport").onclick = function(){uDownloadFile()};
-  document.getElementById("doErase").onclick = function(){uErase();};
-  document.getElementById("doRecord").onclick = function(){uRecord();};
-  document.getElementById("doAnnotate").onclick = function(){uAnnotate();}
-  document.getElementById("doSave").onclick = function(){uSave();};
+  document.querySelector("#doLogToggle").onclick = function(){uToggleLogging()};
+  document.querySelector("#doExport").onclick = function(){uDownloadFile()};
+  document.querySelector("#doErase").onclick = function(){uErase();};
+  document.querySelector("#doRecord").onclick = function(){uRecord();};
+  document.querySelector("#doAnnotate").onclick = function(){uAnnotate();}
+  document.querySelector("#doSave").onclick = function(){uSave();};
 
   //IS user currenting logging and recording?
   let logging = localStorage.getItem('logging');
@@ -28,23 +28,23 @@ window.addEventListener("load", function() {
 
   //SET LOGGING TOGGLE BUTTON TEXT
   if (logging == "true"){
-    document.getElementById("doLogToggle").innerHTML="Stop Logging";}
-  else { document.getElementById("doLogToggle").innerHTML="Start Logging";}
+    document.querySelector("#doLogToggle").innerHTML="Stop Logging";}
+  else { document.querySelector("#doLogToggle").innerHTML="Start Logging";}
 
   //SET BUTTON VISIBILITY
   if (recording == "true"){
     //hide all but recording button
-    document.getElementById("doLogToggle").style.display="none";
-    document.getElementById("doExport").style.display="none";
-    document.getElementById("doErase").style.display="none";
+    document.querySelector("#doLogToggle").style.display="none";
+    document.querySelector("#doExport").style.display="none";
+    document.querySelector("#doErase").style.display="none";
 
-    document.getElementById("doPurpose").style.display="flex";
-    document.getElementById("doRecord").innerHTML="Stop Recording";
-    document.getElementById("doRecord").classList.remove("btn-outline-dark");
-    document.getElementById("doRecord").classList.add("btn-outline-danger");
-    document.getElementById("doWrite").placeholder="Enter annotations here";
+    document.querySelector("#doPurpose").style.display="flex";
+    document.querySelector("#doRecord").innerHTML="Stop Recording";
+    document.querySelector("#doRecord").classList.remove("btn-outline-dark");
+    document.querySelector("#doRecord").classList.add("btn-outline-danger");
+    document.querySelector("#doWrite").placeholder="Enter annotations here";
   }
-  else { document.getElementById("doPurpose").style.display="none";}
+  else { document.querySelector("#doPurpose").style.display="none";}
 
 });
 
@@ -69,7 +69,7 @@ function uToggleLogging(){
   if (logging == "true"){
       //STOP LOGGING
       chrome.browserAction.setIcon({path : "off.png"});
-      document.getElementById("doLogToggle").innerHTML="Start Logging";
+      document.querySelector("#doLogToggle").innerHTML="Start Logging";
       localStorage.setItem('logging', false);
       log(Date.now(), "meta", "logging", "stop","")
         .catch(err => {console.error ("DB | ERROR" + err.stack);});
@@ -86,7 +86,7 @@ function uToggleLogging(){
     }
   else {
       chrome.browserAction.setIcon({path : "on.png"});
-      document.getElementById("doLogToggle").innerHTML="Stop Logging";
+      document.querySelector("#doLogToggle").innerHTML="Stop Logging";
       localStorage.setItem('logging', true);
 
       //LOG STATUS
@@ -154,10 +154,10 @@ function uErase(){
 
 //SAVE the annotation
 function uSave(){
-  let text = document.getElementById("doWrite").value;
+  let text = document.querySelector("#doWrite").value;
 
   //is this the start of the session? or continuation?
-  let stage = (document.getElementById("doWrite").placeholder);
+  let stage = (document.querySelector("#doWrite").placeholder);
   if (stage == "Enter annotations here"){
     //LOG AS ANNOTATION
     log(Date.now(), "meta", "recording", "annotation", {result:text})
@@ -170,8 +170,8 @@ function uSave(){
       .catch(err => {console.error ("DB | ERROR" + err.stack);});
 
     //UPDATE INPUT UI
-    document.getElementById("doWrite").value=null;
-    document.getElementById("doWrite").placeholder="Enter annotations here";
+    document.querySelector("#doWrite").value=null;
+    document.querySelector("#doWrite").placeholder="Enter annotations here";
   }
 }
 
@@ -199,17 +199,17 @@ function uRecord(){
       });
 
       //UPDATE RECORDING BUTTON
-      document.getElementById("doRecord").classList.remove("btn-outline-dark");
-      document.getElementById("doRecord").classList.add("btn-outline-danger");
+      document.querySelector("#doRecord").classList.remove("btn-outline-dark");
+      document.querySelector("#doRecord").classList.add("btn-outline-danger");
 
       //UPDATE INPUT UI
-      document.getElementById("doPurpose").style.display="flex";
-      document.getElementById("doRecord").innerHTML="Stop Recording";
+      document.querySelector("#doPurpose").style.display="flex";
+      document.querySelector("#doRecord").innerHTML="Stop Recording";
 
       //REMOVE OTHER BUTTONS
-      document.getElementById("doLogToggle").style.display="none";
-      document.getElementById("doExport").style.display="none";
-      document.getElementById("doErase").style.display="none";
+      document.querySelector("#doLogToggle").style.display="none";
+      document.querySelector("#doExport").style.display="none";
+      document.querySelector("#doErase").style.display="none";
 
       break;
     case "true": //stop recording but keep logging
@@ -226,20 +226,20 @@ function uRecord(){
       //SET LOGGING
       chrome.browserAction.setIcon({path : "on.png"});
       localStorage.setItem('logging', true);
-      document.getElementById("doLogToggle").innerHTML="Stop Logging";
+      document.querySelector("#doLogToggle").innerHTML="Stop Logging";
 
       //UPDATE RECORDING BUTTON
-      document.getElementById("doRecord").classList.add("btn-outline-dark");
-      document.getElementById("doRecord").classList.remove("btn-outline-danger");
+      document.querySelector("#doRecord").classList.add("btn-outline-dark");
+      document.querySelector("#doRecord").classList.remove("btn-outline-danger");
 
       //UPDATE INPUT UI
-      document.getElementById("doPurpose").style.display="none";
-      document.getElementById("doRecord").innerHTML="Record Session";
+      document.querySelector("#doPurpose").style.display="none";
+      document.querySelector("#doRecord").innerHTML="Record Session";
 
       //ADD OTHER BUTTONS
-      document.getElementById("doLogToggle").style.display="flex";
-      document.getElementById("doExport").style.display="flex";
-      document.getElementById("doErase").style.display="flex";
+      document.querySelector("#doLogToggle").style.display="flex";
+      document.querySelector("#doExport").style.display="flex";
+      document.querySelector("#doErase").style.display="flex";
       break;
   }
 }
