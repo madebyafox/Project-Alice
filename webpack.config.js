@@ -91,9 +91,9 @@ var options = {
       chunks: ["popup"]
     }),
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, "src", "blank.html"),
-      filename: "blank.html",
-      chunks: ["blank"]
+      template: path.join(__dirname, "src", "annotate.html"),
+      filename: "annotate.html",
+      chunks: ["annotate"]
     }),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, "src", "options.html"),
