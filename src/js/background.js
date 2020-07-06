@@ -31,10 +31,10 @@ chrome.commands.onCommand.addListener(function(command) {
 //LISTEN for annotations from contentscript
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    console.log(sender.tab ?
-                "from a content script:" + sender.tab.url :
-                "from the extension");
-    sendResponse({ result: "any response from background" });
+    // console.log(sender.tab ?
+    //             "from a content script:" + sender.tab.url :
+    //             "from the extension");
+    // sendResponse({ result: "any response from background" });
     if (request.type == "annotation"){
       log(Date.now(), "meta", "shortcut", "annotation", {result:request.result})
         .catch(err => {console.error ("DB | ERROR" + err.stack);});
