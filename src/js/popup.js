@@ -4,7 +4,8 @@ import $ from 'jquery'
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import {makeAnnotation} from "./utils/helper"
+// import {makeAnnotation} from "./utils/helper"
+import {makeAnnotation} from "./background";
 import { dumpDB, eraseDB, log } from "./utils/database";
 import {getAllWindows, getIdentity} from "./utils/browserAPI";
 
@@ -17,6 +18,9 @@ window.addEventListener("load", function() {
   document.querySelector("#doLogToggle").onclick = function(){uToggleLogging()};
   document.querySelector("#doExport").onclick = function(){uDownloadFile()};
   document.querySelector("#doErase").onclick = function(){uErase();};
+  document.querySelector("#doView").onclick = function(){
+    window.open('view.html', '_blank');
+  };
   document.querySelector("#doAnnotate").onclick = function(){uAnnotate();}
 
   //IS user currenting logging and recording?
@@ -134,5 +138,5 @@ function uErase(){
 //ANNOTATE
 function uAnnotate(){
   makeAnnotation();
-  window.close();
+  // window.close();
 }

@@ -1,14 +1,12 @@
 import $ from 'jquery'
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {dumpDB, log} from "./utils/database"
-
-console.log("IN CONTENT SCRIPT");
+import { log } from "./utils/database"
 
 //On injection, add modal to the DOM and bind listener
-function main() {
+function initialize() {
 
-  console.log("INJECTING CONTENT SCRIPT");
+  console.log("INITIALIZING CONTENT SCRIPT");
 
   //DEFINE ANNOTATION MODAL
   let modal = document.createElement("div");
@@ -84,50 +82,60 @@ function main() {
       annotation.value="";
   });
 
-}
-
-function destructor() {
-    // Tear down content script: Unbind events, clear timers, restore DOM, etc.
-    // Destruction is needed only once
-    console.log("DESCTRUCTING CONTENT SCRIPT");
-    document.removeEventListener(destructionEvent, destructor);
-
-    //remove modal from DOM
-    $('#annotateModal').remove();
-    $('.modal-backdrop').remove();
+  //open the modal! 
+  $('#annotateModal').modal({
+    backdrop: true, //close modal on click background
+    keyboard: true, //close modal on esc
+    focus:true,
+    show:true
+  });
 
 }
 
-var destructionEvent = 'destructmyextension_' + chrome.runtime.id;
+//Listen for messages from background.js
+let backgroundListener = function (request, sender, sendResponse) {
+  console.log("I got a message: "+ request.type);
 
-// Unload previous content script if needed
-document.dispatchEvent(new CustomEvent(destructionEvent));
-document.addEventListener(destructionEvent, destructor);
-
-
-main();
-
-//ON receiving message from background.js indicating the keyboard shortcut
-//was activated, reveal the modal
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-
-  console.log("I got a message!");
-
-  switch (request.type){
-    case "openModal":
-
+  switch (request.type) {
+    case "are_you_there_content_script?":
+      // console.log("CS | already here");
+      //respond so script isn't re-injected
+      sendResponse({status: "script_is_here"});
+      break;
+    case "open_modal":
       //OPEN the annotation modal
+      // console.log("CS | Open Modal")
       $('#annotateModal').modal({
         backdrop: true, //close modal on click background
-        // backdrop:'static',
         keyboard: true, //close modal on esc
         focus:true,
         show:true
       });
-      break;
-
-    case "refresh":
-      console.log("I GOT A REQUEST TO REFRESH");
+      sendResponse({status: "Opened Modal"});
       break;
     }
-});
+  }
+chrome.runtime.onMessage.addListener(backgroundListener);
+
+//On destruction, remove everything
+function destructor() {
+
+    // Tear down content script: Unbind events, clear timers, restore DOM, etc. Destruction is needed only once
+    console.log("DESTRUCTING CONTENT SCRIPT");
+
+    //UNIND EVENTS
+    document.removeEventListener(destructionEvent, destructor);
+    chrome.runtime.onMessage.removeListener(backgroundListener);
+
+    //restore DOM
+    $('#annotateModal').remove();
+    $('.modal-backdrop').remove();
+}
+
+// Unload previous content script if needed
+var destructionEvent = 'destructmyextension_' + chrome.runtime.id;
+document.dispatchEvent(new CustomEvent(destructionEvent));
+document.addEventListener(destructionEvent, destructor);
+
+// Finally, initialize the script
+initialize();
