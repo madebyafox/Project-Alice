@@ -106,6 +106,11 @@ var options = {
       chunks: ["background"]
     }),
     new HtmlWebpackPlugin({
+      template: path.join(__dirname, "src", "view.html"),
+      filename: "view.html",
+      chunks: ["view"]
+    }),
+    new HtmlWebpackPlugin({
       template: path.join(__dirname, "src", "main.html"),
       filename: "main.html",
       chunks: ["main"]
