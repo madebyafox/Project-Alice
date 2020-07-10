@@ -6,11 +6,18 @@
 </head>
 <body style="width: 100%">
   <div style ="margin: 10px 10px 10px 10px" class="btn-group-vertical">
-    <button id="doLogToggle" class="btn btn-outline-dark btn-sm text-nowrap" title="toggle state of data logging" type="button"></button>
-    <button id="doExport" class="btn btn-outline-dark btn-sm text-nowrap" title="export all data to file and download" type="button">Export File</button>
-    <button id="doErase" class="btn btn-outline-dark btn-sm text-nowrap" title = "remove all data from database" type="button">Erase Data</button>
-    <button id="doView" class="btn btn-outline-dark btn-sm text-nowrap" title = "view annotations" type="button">View</button>
-    <button id="doAnnotate" class="btn btn-outline-dark btn-sm text-nowrap" title = "leave yourself a message" type="button">Annotate</button>
+    <button id="doLogToggle" class="btn btn-outline-dark btn-sm text-nowrap" style="display: flex;" title="toggle state of data logging" type="button"></button>
+    <button id="doExport" class="btn btn-outline-dark btn-sm text-nowrap" style="display: flex;" title="export all data to file and download" type="button">Export File</button>
+    <button id="doErase" class="btn btn-outline-dark btn-sm text-nowrap" style="display: flex;" title = "remove all data from database" type="button">Erase Data</button>
+    <button id="doView" class="btn btn-outline-dark btn-sm text-nowrap" style="display: flex;" title = "view annotations" type="button">View</button>
+    <button id="doRecord" class="btn btn-outline-dark btn-sm text-nowrap" style="display: flex;" title = "Start a search session" type="button">Start Session</button>
+    <button id="doAnnotate" class="btn btn-outline-dark btn-sm text-nowrap" style="display: flex;" title = "leave yourself a message" type="button">Annotate</button>
+  </div>
+    <div id="doPurpose" class="btn-group-vertical" style="">
+      </hr>
+        <textarea  id="doWrite" style="height:200px" class="form-control" placeholder="What is the goal of your search?" aria-label="With textarea"></textarea>
+        <button id="doSave" class="btn btn-outline-dark btn-sm text-nowrap" type="button">Save</button>
+      </div>
   </div>
 </body>
 </html>

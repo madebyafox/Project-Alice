@@ -4,53 +4,18 @@
 //    \_/
 
 "use strict";
+console.log("I AM BACKGROUND HERE ME ROAR");
 
 // import {makeAnnotation} from "./utils/helper"
 import {dumpDB, log} from "./utils/database"
+import {makeAnnotation} from "./utils/helper"
 import {getAllWindows, getIdentity} from "./utils/browserAPI";
 import '../img/on.png';
 import '../img/off.png';
 
 //INITIALIZE STATE
 localStorage.setItem('logging', true);
-
-async function makeAnnotation(){
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-  console.log("annotating: "+ tabs[0].url);
-
-  if (tabs[0] == undefined){
-    console.log("HS | current tab is undefined!");
-  }
-
-  //coming from a chrome page (history, dev tools, newtab)
-  else if (tabs[0].url.match(/chrome:\/\/\w+\//g))
-  {
-    console.log ("CHROME PAGE WORKAROUND");
-    chrome.tabs.create({url:"annotate.html"}, function(newtab){
-      chrome.tabs.sendMessage(newtab.id, {type: "open_modal"});
-      console.log("HS | Open Workaround");
-    });
-  }
-
-  else { //current tab is not devTools or other extension-specific page
-
-    //is content script is already there?
-    chrome.tabs.sendMessage(tabs[0].id, {type: "are_you_there_content_script?"}, function(msg) {
-      console.log("BS | pinged CS in: "+ tabs[0].id);
-      msg = msg || {};
-      if (msg.status != 'script_is_here') {
-        console.log("BS | Injecting contentscript to: "+tabs[0].id);
-        chrome.tabs.executeScript(null,{file:"contentscript.bundle.js"});
-      }
-      else {
-        console.log("BS | Content script already there");
-        chrome.tabs.sendMessage(tabs[0].id, {type: "open_modal"});
-        console.log("HS | Open Modal");
-      }
-    });
-  }
-});
-}
+localStorage.setItem('recording', false);
 
 //EXTENSION REQUIRES INDEXEDDB
 if (!('indexedDB' in window)) {
@@ -62,7 +27,6 @@ chrome.commands.onCommand.addListener(function(command)
 {
   console.log('Command:', command);
   if (command == "annotate") {
-
     makeAnnotation();
   }
 });
@@ -203,27 +167,26 @@ WEBNAV_EVENTS.forEach(function(e) {
   });
 });
 
+
 //ON EXTENSION INSTALL, LOG CURRENT STRUCTURE
 getAllWindows()
   .then (
-   result => (
-     log(Date.now(),"structure", "initialize", "initialize", {result})
-      .catch(err => {console.error ("DB | ERROR" + err.stack);})
-   ),
-   error => console.log("error! "+error)
- );
+     result => (
+       log(Date.now(),"structure", "initialize", "initialize", {result})
+        .catch(err => {console.error ("DB | ERROR" + err.stack);})
+     ),
+     error => console.log("error! "+error)
+   );
 
 //LOG BROWSER and USER information
 getIdentity()
   .then (
-    result => (
-      log(Date.now(), "meta", "initialize", "initialize",
-        { extension: chrome.runtime.getManifest().version,
-          userAgent:window.navigator.userAgent,
-          user: result
-        })
-        .catch(err => {console.error ("DB | ERROR" + err.stack);})
-    )
-  );
-
-export {makeAnnotation}
+      result => (
+        log(Date.now(), "meta", "initialize", "initialize",
+          { extension: chrome.runtime.getManifest().version,
+            userAgent:window.navigator.userAgent,
+            user: result
+          })
+          .catch(err => {console.error ("DB | ERROR" + err.stack);})
+      )
+    );
