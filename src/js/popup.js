@@ -41,7 +41,7 @@ window.addEventListener("load", function() {
     document.querySelector("#doLogToggle").style.display="none";
     document.querySelector("#doExport").style.display="none";
     document.querySelector("#doErase").style.display="none";
-    document.querySelector("#doView").style.display="none";
+    document.querySelector("#doView").style.display="flex";
     document.querySelector("#doAnnotate").style.display="none";
     document.querySelector("#doPurpose").style.display="flex";
     document.querySelector("#doRecord").innerHTML="End Session";
@@ -227,7 +227,7 @@ function uRecord(){
       document.querySelector("#doLogToggle").style.display="none";
       document.querySelector("#doExport").style.display="none";
       document.querySelector("#doErase").style.display="none";
-      document.querySelector("#doView").style.display="none";
+      document.querySelector("#doView").style.display="flex";
       document.querySelector("#doAnnotate").style.display="none";
 
       break;

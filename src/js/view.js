@@ -23,9 +23,10 @@ getAnnotations()
       let localTime = time.toLocaleTimeString();
 
       let annotation = document.createElement("li");
+      annotation.classList.add("timeline-inverted");
 
-      let badge = document.createElement("div");
-      badge.classList.add("timeline-badge");
+      // let badge = document.createElement("div");
+      // badge.classList.add("timeline-badge");
 
       let icon = document.createElement("i");
       icon.classList.add("glyphicon","glyphicon-check");
@@ -47,7 +48,7 @@ getAnnotations()
 
       let timeline = document.querySelector(".timeline");
       timeline.append(annotation);
-      annotation.append(badge);
+      // annotation.append(badge);
       annotation.append(panel);
       panel.append(heading);
       heading.append(title);
