@@ -66,5 +66,21 @@ async function log(time, type, handler, sevent, data) {
     }
   }
 
-export {dumpDB, eraseDB, log};
+//RETRIEVE all annotations
+async function getAnnotations(){
+
+  const annotations = await DB.meta
+    .where('event')
+    .anyOf(["annotation","goal"])
+    .toArray();
+
+  //sort descending;
+  annotations.sort(function(a, b){return b.id - a.id});
+  console.log("DB | "+ annotations);
+  return annotations;
+
+}
+
+
+export {dumpDB, eraseDB, log, getAnnotations};
 //TODO: figure out correct export format

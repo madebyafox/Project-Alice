@@ -8,6 +8,17 @@ async function makeAnnotation(){
     }
 
     //coming from a chrome page (history, dev tools, newtab)
+    else if (tabs[0].url.match(/chrome-extension:\/\/\w+\//g))  {
+      console.log ("EXT PAGE WORKAROUND");
+      chrome.tabs.create({url:"annotate.html"}, function(newtab){
+        chrome.tabs.sendMessage(newtab.id, {type: "open_modal"});
+        console.log("BS | Open Workaround");
+      });
+    }
+
+
+
+    //coming from a chrome page (history, dev tools, newtab)
     else if (tabs[0].url.match(/chrome:\/\/\w+\//g))  {
       console.log ("CHROME PAGE WORKAROUND");
       chrome.tabs.create({url:"annotate.html"}, function(newtab){

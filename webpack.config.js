@@ -21,6 +21,7 @@ if (fileSystem.existsSync(secretsPath)) {
 var options = {
   mode: process.env.NODE_ENV || "development",
   entry: {
+    view: path.join(__dirname, "src", "js", "view.js"),
     popup: path.join(__dirname, "src", "js", "popup.js"),
     options: path.join(__dirname, "src", "js", "options.js"),
     background: path.join(__dirname, "src", "js", "background.js"),
@@ -28,7 +29,7 @@ var options = {
     contentscript: path.join(__dirname, "src", "js", "contentscript.js"),
     database: path.join(__dirname, "src", "js/utils", "database.js"),
     helper: path.join(__dirname, "src", "js/utils", "helper.js"),
-    annotate: path.join(__dirname, "src", "js/utils", "annotate.js")
+    annotate: path.join(__dirname, "src", "js/utils", "annotate.js"),
 
   },
   output: {
