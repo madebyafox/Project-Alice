@@ -1,0 +1,38 @@
+
+#bigcontainer{
+  background-color: #000000;
+}
+
+#mainrow {
+  background-color: #404040;
+}
+
+#sidebar{
+  background-color: #808080;
+}
+
+#canvas{
+  background-color: #F8F8F8;
+}
+
+.subheading {
+  background-color: black;
+  color:white;
+}
+
+.tabItem a {
+  /* background: #ffffff; */
+  /* color: hsl(0, 0%, 11%); */
+  /* color: black; */
+  /* font-weight: bold; */
+  /* border-bottom: 3px solid #3ea5ed; */
+  /* position: relative; */
+  color:black;
+  font-size: 12px;
+}
+
+.tabItem img{
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+}
