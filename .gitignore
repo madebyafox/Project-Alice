@@ -4,3 +4,6 @@ secrets.*.js
 package-lock.json
 yarn.lock
 yarn-error.log
+*.cnf
+logs
+*.DS_Store
