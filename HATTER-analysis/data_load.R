@@ -3,9 +3,10 @@
 #CONFIGURATION
 #load libs
 require(jsonlite)
-require(dplyr)
-require(tibble)
-require(tidyr)
+# require(dplyr)
+# require(tibble)
+# require(tidyr)
+require(tidyverse)
 #turn off sci-notation
 options(scipen=999)
 options(stringsAsFactors=FALSE)
@@ -144,7 +145,7 @@ LOAD <- function(filename){
   return (latest)
 }
 
-
+#SETUP EMPTY DFS 
 df_files <- data.frame()
 df_meta <- data.frame()
 df_structure <- data.frame()
@@ -153,15 +154,24 @@ df_navigation <- data.frame()
 files = list.files("./logs")
 dfs <- lapply (files, FUN=LOAD)
 
+#ADD LOADED DATA TO DFS 
 for (i in seq_along(dfs)) {
-  print(paste("files",i))
-  df_files <- rbind(df_files, dfs[[i]][[1]])
-  print(paste("meta",i))
-  df_meta <- rbind(df_meta, dfs[[i]][[2]])
-  print(paste("structure",i))
-  df_structure <- rbind(df_structure, dfs[[i]][[3]])
-  print(paste("nav",i))
-  df_navigation <- rbind(df_navigation, dfs[[i]][[4]])
+  
+  #is current file already added?
+  currFile = dfs[[i]][[1]]$file 
+  
+  if ( sum(str_detect(df_files$file,currFile)) == 0 ) #file name not in df_files
+  {
+    print(paste("files",i))
+    df_files <- rbind(df_files, dfs[[i]][[1]])
+    print(paste("meta",i))
+    df_meta <- rbind(df_meta, dfs[[i]][[2]])
+    print(paste("structure",i))
+    df_structure <- rbind(df_structure, dfs[[i]][[3]])
+    print(paste("nav",i))
+    df_navigation <- rbind(df_navigation, dfs[[i]][[4]])
+  }
+  else (warning ("WARNING | DUPLICATE File? ", currFile))
 }
 
 
