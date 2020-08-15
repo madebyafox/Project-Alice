@@ -4,9 +4,11 @@
 #load libs
 require(jsonlite)
 # require(dplyr)
+#require (dbplyr)
 # require(tibble)
 # require(tidyr)
 require(tidyverse)
+
 #turn off sci-notation
 options(scipen=999)
 options(stringsAsFactors=FALSE)
@@ -152,6 +154,7 @@ df_structure <- data.frame()
 df_navigation <- data.frame()
 
 files = list.files("./logs")
+
 dfs <- lapply (files, FUN=LOAD)
 
 #ADD LOADED DATA TO DFS 
@@ -176,7 +179,65 @@ for (i in seq_along(dfs)) {
 
 
 
+library(dbplyr)
+library(DBI)
+library(odbc)
 
 
 
+#connect to dabase
+con <- DBI::dbConnect(odbc::odbc(),
+                      Driver   = "/usr/local/mysql-connector-odbc-8.0.21-macos10.15-x86-64bit/lib/libmyodbc8a.so",
+                      Server   = "127.0.0.1",
+                      Database = "hatter",
+                      UID      = rstudioapi::askForPassword("Database user"),
+                      PWD      = rstudioapi::askForPassword("Database password"),
+                      Port     = 3306)
+
+dbListTables(con)
+
+data <- dbWriteTable(con, "files", df_files, append = TRUE)
+data <- dbWriteTable(con, "meta", df_meta, append = TRUE)
+data <- dbWriteTable(con, "structure", df_structure, append = TRUE)
+data <- dbWriteTable(con, "navigation", df_navigation, append = TRUE)
+
+dbReadTable(con, "files")
+dbReadTable(con, "meta")
+dbReadTable(con, "navigation")
+
+rs <- dbSendStatement(
+  con,
+  "INSERT INTO structure VALUES df_structure"
+)
+dbHasCompleted(rs)
+dbGetRowsAffected(rs)
+dbClearResult(rs)
+dbReadTable(con, "structure")
+
+
+
+
+
+dbWriteTable(con, "CARS", head(cars, 3))
+
+rs <- dbSendStatement(
+  con,
+  "INSERT INTO CARS (speed, dist) VALUES (1, 1), (2, 2), (3, 3)"
+)
+dbHasCompleted(rs)
+dbGetRowsAffected(rs)
+dbClearResult(rs)
+dbReadTable(con, "CARS")
+dbReadTable(con, "files")
+dbReadTable(con, "cans")
+
+
+
+dbWriteTable(con, "widget", head(cars, 3))
+dbReadTable(con, "widget")   # there are 3 rows
+dbExecute(
+  con,
+  "INSERT INTO widget (speed, dist) VALUES (1, 1), (2, 2), (3, 3)"
+)
+dbReadTable(con, "widget")   # there are now 6 rows
 
