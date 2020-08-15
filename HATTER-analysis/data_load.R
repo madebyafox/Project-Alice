@@ -8,31 +8,32 @@ require(tibble)
 require(tidyr)
 #turn off sci-notation
 options(scipen=999)
+options(stringsAsFactors=FALSE)
+
+#SET WORKING DIRECTORY 
+setwd("~/Sites/RESEARCH/ProjectAlice/Project-Alice/HATTER-analysis")
 
 
-#GLOBAL VARS
-filename = "logs/test_med.json"
-filename = "logs/hatter_1596832268611.json"
-
-#FUNCTION SETUPFILES (creates file df)
-SETUPFILES <- function()
-{
-  df_files <- setNames(data.frame(matrix(ncol = 7, nrow = 0)), 
-                       c("file", "user", "start", "end", "n_meta", "n_nav", "n_struct"))
-  df_meta <- data.frame()
-  df_structure <- data.frame()
-  df_navigation <- data.frame()
-  return (list(df_files, df_meta, df_structure, df_navigation))
-}
 
 #FUNCTION LOADFILE (takes single filename extracts 3 df)
 LOADFILE <- function(filename)
 {
+  
+  file = paste("logs/",filename,sep = "")
+  warning("LOADING | ", file)
+  
   #LOAD ONE LOG FILE 
-  file = filename
   logfile <- stream_in(file(file))
   logdf <- data.frame(logfile$data$data)
   logdf <- as_tibble(logdf)  
+  
+  #DISCOVER TABLE DIMENSIONS
+  n_nav = dim(logdf$rows[[1]])
+  n_nav = n_nav[1]
+  n_struct = dim(logdf$rows[[2]])
+  n_struct = n_struct[1]
+  n_meta = dim(logdf$rows[[3]])
+  n_meta = n_meta[1]
   
   #CHECK TABLE LENGTHS
   n_nav = length(logdf$rows[[1]])
@@ -45,7 +46,10 @@ LOADFILE <- function(filename)
   L <- logdf$tableName == "meta" #define logical vector
   df_meta <- logdf[L,] %>% select("rows") #filter for 'meta' row
   df_meta <- data.frame(df_meta$rows) #extract only "rows" col
-  df_meta <- df_meta %>% select(-X.types) # remove unecessary col 
+  
+  if (is.null(df_meta$X.types) == FALSE)
+  { df_meta <- df_meta %>% select(-X.types) # remove unecessary col 
+  }
   
   if (is.data.frame(df_meta$data))
   {
@@ -121,25 +125,46 @@ LOADFILE <- function(filename)
   user = df_meta$user[1]
   start = df_meta$id[1]
   end = df_meta$id[nrow(df_meta)]
-  files <- list(file, user, start, end, n_meta, n_nav, n_struct)
+  files <- list(filename, user, start, end, n_meta, n_nav, n_struct)
   names(files) <- list("file", "user", "start", "end", "n_meta", "n_nav", "n_struct")
   t(files)
   
   return (dfs <- list (files, df_meta, df_structure, df_navigation))
 }
 
+#RECEIVE PAYLOAD AND ADD TO EXISTING DFS 
+LOAD <- function(filename){
+  print(filename)
+  latest <- LOADFILE(filename)
+  # df_files <- rbind(df_files,data.frame(latest[1]))
+  # df_meta <- rbind(df_meta, data.frame(latest[2]))
+  # df_structure <- rbind(df_structure, data.frame(latest[3]))
+  # df_navigation <- rbind(df_navigation, data.frame(latest[4]))
+  # return (dfs <- list (df_files, df_meta, df_structure, df_navigation))
+  return (latest)
+}
 
-master <- SETUPFILES()
-df_files <- data.frame(master[1])
-df_meta <- data.frame(master[2])
-df_structure <- data.frame(master[3])
-df_navigation <- data.frame(master[4])
 
-newest <- LOADFILE(filename)
-df_files <- rbind(df_files,data.frame(newest[1]))
-df_meta <- rbind(df_meta, data.frame(newest[2]))
-df_structure <- rbind(df_structure, data.frame(newest[3]))
-df_navigation <- rbind(df_navigation, data.frame(newest[4])) 
+df_files <- data.frame()
+df_meta <- data.frame()
+df_structure <- data.frame()
+df_navigation <- data.frame()
+
+files = list.files("./logs")
+dfs <- lapply (files, FUN=LOAD)
+
+for (i in seq_along(dfs)) {
+  print(paste("files",i))
+  df_files <- rbind(df_files, dfs[[i]][[1]])
+  print(paste("meta",i))
+  df_meta <- rbind(df_meta, dfs[[i]][[2]])
+  print(paste("structure",i))
+  df_structure <- rbind(df_structure, dfs[[i]][[3]])
+  print(paste("nav",i))
+  df_navigation <- rbind(df_navigation, dfs[[i]][[4]])
+}
+
+
 
 
 
