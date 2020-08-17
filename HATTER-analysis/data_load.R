@@ -16,8 +16,6 @@ options(stringsAsFactors=FALSE)
 #SET WORKING DIRECTORY 
 setwd("~/Sites/RESEARCH/ProjectAlice/Project-Alice/HATTER-analysis")
 
-
-
 #FUNCTION LOADFILE (takes single filename extracts 3 df)
 LOADFILE <- function(filename)
 {
@@ -196,13 +194,14 @@ con <- DBI::dbConnect(odbc::odbc(),
 
 dbListTables(con)
 
-data <- dbWriteTable(con, "files", df_files, append = TRUE)
-data <- dbWriteTable(con, "meta", df_meta, append = TRUE)
-data <- dbWriteTable(con, "structure", df_structure, append = TRUE)
-data <- dbWriteTable(con, "navigation", df_navigation, append = TRUE)
+dbWriteTable(con, "files", df_files, append = TRUE)
+dbWriteTable(con, "meta", df_meta, append = TRUE)
+dbWriteTable(con, "structure", df_structure, append = TRUE)
+dbWriteTable(con, "navigation", df_navigation, append = TRUE)
 
 dbReadTable(con, "files")
 dbReadTable(con, "meta")
+dbReadTable(con, "structure")
 dbReadTable(con, "navigation")
 
 rs <- dbSendStatement(
