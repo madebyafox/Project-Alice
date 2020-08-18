@@ -19,14 +19,12 @@ setwd("~/Sites/RESEARCH/ProjectAlice/Project-Alice/HATTER-analysis") #set workin
 LOADFILE <- function(filename)
 {
   
-  cat("NOW READING :: ")
-  cat(filename)
+  print(":: NOW READING :: ")
   #start by clearing old data
   rm(df_files, df_meta, df_structure, df_windows, df_tabs, df_navigation) #will throw warning first time
   
   file = paste("logs/",filename,sep = "")
-  cat("LOADING | ") 
-  cat(file)
+  print(file)
   
   #READ JSON FROM ONE FILE 
   logfile <- stream_in(file(file))
@@ -209,17 +207,24 @@ LOADFILE <- function(filename)
     if (is.null (df_navigation$user)) {stop("PROBLEM | No user in nav : ",file) }
   }
   
-  # return (dfs <- list (df_meta, df_structure, df_windows, df_tabs, df_navigation))
+  print(":: DONE READING :: ")
+  print(filename)
+  return (latest <- list (df_meta, df_structure, df_windows, df_tabs, df_navigation))
 }
 
 #RECEIVE PAYLOAD AND ADD TO EXISTING DFS 
 DBIMPORT <- function(filename){
  
-  # df_meta       <-latest[1]
-  # df_structure  <- latest[2]
-  # df_windows    <- latest[3]
-  # df_tabs       <- latest[4]
-  # df_navigation <- latest[5]
+  latest <- LOADFILE(filename)
+ 
+  print("::NOW IMPORTING ::")  
+  print(filename)
+   
+  df_meta       <-latest[[1]]
+  df_structure  <- latest[[2]]
+  df_windows    <- latest[[3]]
+  df_tabs       <- latest[[4]]
+  df_navigation <- latest[[5]]
   
   # does current file overlap with existing file?
   #if YES ... fak. need to slice the file, only include non-duplicate entries
@@ -227,7 +232,7 @@ DBIMPORT <- function(filename){
       
   #LOAD META
   if ( dbExistsTable(con, "meta") ) {
-    n_meta = dim(df_meta)[1] #rows to write
+    n_meta = as.integer(dim(df_meta)[1]) #rows to write
     db_before = as.integer(dbGetQuery(con,  #get curr num rows
                            "SELECT count(*) from meta")[1,1])
     
@@ -238,51 +243,61 @@ DBIMPORT <- function(filename){
       error = function(e) {e},
       finally = {}
     )
-    cat ("LOADING META ...")
+    print("INSERTING META")
     print (result)
-    
+   
     db_after = as.integer(dbGetQuery(con,  #get curr num rows
                           "SELECT count(*) from meta")[1,1])
+   
     meta_loaded = db_after-db_before
+   
     if (meta_loaded != n_meta) {
-      warning("WARNING | incomplete load to META ", file)
+      warning("WARNING | incomplete load to META ", filename)
     }
-    cat("META | ")
-    cat(meta_loaded)
-    cat(" records loaded")
+    
+    
+    print("META : ")
+    print(meta_loaded)
+    print(" records loaded")
   } else {error("PROBLEM| DB table META doesn't exist")}
   
   #LOAD STRUCTURE
   if ( dbExistsTable(con, "structure") ) {
-    n_struct = dim(df_structure)[1] #rows to write
-    db_before = dbGetQuery(con,  #get curr num rows
-                           "SELECT count(*) from structure")[1,1]
     
+    n_struct = dim(df_structure)[1] #rows to write
+    db_before = as.integer(dbGetQuery(con,  #get curr num rows
+                           "SELECT count(*) from structure")[1,1])
     result=tryCatch({
       dbWriteTable(con,"structure",df_structure, append = TRUE)},
       warning = function(w) {w},
       error = function(e) {e},
       finally = {}
     )
-    cat ("LOADING STRUCTURE ...")
+    print("INSERTING STRUCTURE")
     print (result)
     
-    db_after = dbGetQuery(con,  #get curr num rows
-                          "SELECT count(*) from structure")[1,1]
+    
+    db_after = as.integer(dbGetQuery(con,  #get curr num rows
+                          "SELECT count(*) from structure")[1,1])
+    
+    
     structure_loaded = db_after-db_before
+    
     if (structure_loaded != n_struct) {
-      warning("WARNING | incomplete load to STRUCTURE ", file)
+      warning("WARNING | incomplete load to STRUCTURE ", filename)
     }
-    cat("STRUCTURE | ")
-    cat(as.integer(structure_loaded))
-    cat(" records loaded")
+   
+    
+    print("STRUCTURE : ")
+    print(structure_loaded)
+    print(" records loaded")
   } else {error("PROBLEM| DB table STRUCTURE doesn't exist")}
   
   #LOAD WINDOWS
   if ( dbExistsTable(con, "windows") ) {
     n_windows = dim(df_windows)[1] #rows to write
-    db_before = dbGetQuery(con,  #get curr num rows
-                           "SELECT count(*) from windows")[1,1]
+    db_before = as.integer(dbGetQuery(con,  #get curr num rows
+                           "SELECT count(*) from windows")[1,1])
     
     result=tryCatch({
       dbWriteTable(con,"windows",df_windows, append = TRUE)},
@@ -290,25 +305,27 @@ DBIMPORT <- function(filename){
       error = function(e) {e},
       finally = {}
     )
-    cat ("LOADING WINDOWS ...")
+    print("INSERTING WINDOWS")
     print (result)
     
-    db_after = dbGetQuery(con,  #get curr num rows
-                          "SELECT count(*) from windows")[1,1]
+    db_after = as.integer(dbGetQuery(con,  #get curr num rows
+                          "SELECT count(*) from windows")[1,1])
     windows_loaded = db_after-db_before
     if (windows_loaded != n_windows) {
-      warning("WARNING | incomplete load to WINDOWS ", file)
+      warning("WARNING | incomplete load to WINDOWS ", filename)
     }
-    cat("WINDOWS | ")
-    cat(as.integer(windows_loaded))
-    cat(" records loaded")
+    
+    
+    print("WINDOWS : ")
+    print(windows_loaded)
+    print(" records loaded")
   } else {error("PROBLEM| DB table WINDOWS doesn't exist")}
   
   #LOAD TABS
   if ( dbExistsTable(con, "tabs") ) {
     n_tabs = dim(df_tabs)[1] #rows to write
-    db_before = dbGetQuery(con,  #get curr num rows
-                           "SELECT count(*) from tabs")[1,1]
+    db_before = as.integer(dbGetQuery(con,  #get curr num rows
+                           "SELECT count(*) from tabs")[1,1])
     
     result=tryCatch({
       dbWriteTable(con,"tabs",df_tabs, append = TRUE)},
@@ -316,25 +333,26 @@ DBIMPORT <- function(filename){
       error = function(e) {e},
       finally = {}
     )
-    cat ("LOADING TABS ...")
+    print("INSERTING TABS")
     print (result)
     
-    db_after = dbGetQuery(con,  #get curr num rows
-                          "SELECT count(*) from tabs")[1,1]
+    db_after = as.integer(dbGetQuery(con,  #get curr num rows
+                          "SELECT count(*) from tabs")[1,1])
     tabs_loaded = db_after-db_before
     if (tabs_loaded != n_tabs) {
-      warning("WARNING | incomplete load to TABS ", file)
+      warning("WARNING | incomplete load to TABS ", filename)
     }
-    cat("TABS | ")
-    cat(as.integer(tabs_loaded))
-    cat(" records loaded")
+    
+    print("TABS : ")
+    print(tabs_loaded)
+    print(" records loaded")
   } else {error("PROBLEM| DB table TABS doesn't exist")}
   
   #LOAD NAVIGATION
   if ( dbExistsTable(con, "navigation") ) {
     n_navigation = dim(df_navigation)[1] #rows to write
-    db_before = dbGetQuery(con,  #get curr num rows
-                           "SELECT count(*) from navigation")[1,1]
+    db_before = as.integer(dbGetQuery(con,  #get curr num rows
+                           "SELECT count(*) from navigation")[1,1])
     
     result=tryCatch({
       dbWriteTable(con,"navigation",df_navigation, append = TRUE)},
@@ -342,23 +360,24 @@ DBIMPORT <- function(filename){
       error = function(e) {e},
       finally = {}
     )
-    cat ("LOADING NAVIGATION ...")
+    print("INSERTING NAVIGATION")
     print (result)
     
-    db_after = dbGetQuery(con,  #get curr num rows
-                          "SELECT count(*) from navigation")[1,1]
+    db_after = as.integer(dbGetQuery(con,  #get curr num rows
+                          "SELECT count(*) from navigation")[1,1])
     navigation_loaded = db_after-db_before
     if (navigation_loaded != n_navigation) {
-      warning("WARNING | incomplete load to NAVIGATION ", file)
+      warning("WARNING | incomplete load to NAVIGATION ", filename)
     }
-    cat("NAVIGATION | ")
-    cat(as.integer(navigation_loaded))
-    cat(" records loaded")
+    
+    print("NAVIGATION : ")
+    print(navigation_loaded)
+    print(" records loaded")
   } else {error("PROBLEM| DB table NAVIGATION doesn't exist")}
   
   #CREATE FILE-RECORD [1]
   df_files = data.frame(NA)
-  df_files$file = file
+  df_files$file = filename
   df_files$user = df_meta$user[1]
   df_files$start = df_meta$time[1]
   df_files$end = df_meta$time[nrow(df_meta)]
@@ -377,59 +396,36 @@ DBIMPORT <- function(filename){
   #LOAD FILE-RECORD
   if ( dbExistsTable(con, "files") ) {
     
-    db_before = dbGetQuery(con,  #get curr num rows
-                           "SELECT count(*) from files")[1,1]
-    
-    df_files = data.frame(NA)
-    df_files$file = file
-    df_files$user = this_user
-    df_files$start = this_start
-    df_files$end = this_end
-    df_files$n_meta =  n_meta
-    df_files$n_nav =  n_nav
-    df_files$n_struct= n_struct
-    df_files$n_windows= n_windows
-    df_files$n_tabs= n_tabs
-    df_files$l_meta =  meta_loaded
-    df_files$l_nav =  navigation_loaded
-    df_files$l_struct= structure_loaded
-    df_files$l_windows= windows_loaded
-    df_files$l_tabs=   tabs_loaded
-    df_files <- df_files %>% select(-"NA.")
-    # files <- list(filename, user, start, end, n_meta, n_nav, n_struct)
-    # names(files) <- list("file", "user", "start", "end", "n_meta", "n_nav", "n_struct")
-    # t(files)
-    
+    db_before = as.integer(dbGetQuery(con,  #get curr num rows
+                           "SELECT count(*) from files")[1,1])
     result=tryCatch({
       dbWriteTable(con,"files",df_files, append = TRUE)},
       warning = function(w) {w},
       error = function(e) {e},
       finally = {}
     )
-    cat ("LOADING FILE-RECORD ...")
+    print("INSERTING FILE")
     print (result)
     
-    db_after = dbGetQuery(con,  #get curr num rows
-                          "SELECT count(*) from files")[1,1]
+    db_after = as.integer(dbGetQuery(con,  #get curr num rows
+                          "SELECT count(*) from files")[1,1])
     
     if (db_after-db_before != 1) {
-      stop("WARNING | incomplete load to FILE-RECORD ", file)
+      stop("WARNING | incomplete load to FILE-RECORD ", filename)
     }
-    cat("FILE-RECORD | ")
-    cat(as.integer(db_after-db_before))
-    cat(" records loaded")
+    
+    
+    print("FILE-RECORD : ")
+    print(db_after-db_before)
+    print(" records loaded")
   } else {warning("PROBLEM| DB table FILES doesn't exist")}
+  
+  print("::DONE IMPORTING ::")  
+  print(filename)
 }
-
 
 #########################################################################################
 #END OF FUNCTIONS
-
-#SETUP EMPTY DFS 
-# df_files <- data.frame()
-# df_meta <- data.frame()
-# df_structure <- data.frame()
-# df_navigation <- data.frame()
 
 #GET list of files 
 files = list.files("./logs")
