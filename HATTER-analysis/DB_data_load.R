@@ -154,50 +154,99 @@ LOADFILE <- function(filename)
     df_navigation$url <- df_navigation$data$url
     
     #HANDLE NESTED DATAFRAMES
-    navtabs <- df_navigation$data$tab %>% select(-mutedInfo, -autoDiscardable, -audible, -incognito)
-    navchangeInfo <- df_navigation$data$changeInfo
-    navactiveinfo <- df_navigation$data$activeInfo
-    navdeltas <- df_navigation$data$DELTAS
+    # navtabs <- df_navigation$data$tab 
+    # # %>% select(-mutedInfo, -autoDiscardable, -audible, -incognito) #errors if the data isn't there :/
+    # navchangeInfo <- df_navigation$data$changeInfo
+    # navactiveinfo <- df_navigation$data$activeInfo
+    # navdeltas <- df_navigation$data$DELTAS
+    
+    if(!is.null(df_navigation$data$tab)){  
+      navtabs <- df_navigation$data$tab 
+      #%>% select(-mutedInfo, -autoDiscardable, -audible, -incognito) #problems when cols not present
+      df_navigation <- cbind(df_navigation, "tab"=navtabs)
+    }
+    if(!is.null(df_navigation$data$changeInfo)){
+      navchangeInfo <- df_navigation$data$changeInfo  
+      df_navigation <- cbind(df_navigation,"changeInfo"=navchangeInfo)
+    }
+    if(!is.null(df_navigation$data$activeInfo)){
+      navactiveinfo <- df_navigation$data$activeInfo
+      df_navigation <- cbind(df_navigation, "activeInfo"=navactiveinfo)
+    }
+    if(!is.null(df_navigation$data$DELTAS)){
+      navdeltas <- df_navigation$data$DELTAS
+      df_navigation <- cbind(df_navigation,  "deltas"=navdeltas)
+    }
     
     #HANDLE NESTED LISTS
     #transitionQualifiers
-    navtransition <- df_navigation %>% select(user, time, data)
-    navtransition$transitionQualifier <- navtransition$data$transitionQualifiers
-    navtransition <- navtransition %>% select(-data)
-    navtransition <- navtransition %>% unnest_wider(transitionQualifier)
-    if (ncol(navtransition) > 2) #there was something to unnest
-    {
-      navtransition$...1 <- replace_na(navtransition$...1, "")
-      navtransition$...2 <- replace_na(navtransition$...2, "")
-      navtransition$transitionQualifier = paste(navtransition$...1, navtransition$...2, sep=";")
-      navtransition$transitionQualifier <- recode(navtransition$transitionQualifier, ";" = "")
-    } else {
-      navtransition$transitionQualifier <- NA
+    if(!is.null(df_navigation$data$transitionQualifiers)){
+      navtransition <- df_navigation %>% select(user, time, data)
+      navtransition$transitionQualifier <-navtransition$data$transitionQualifiers  
+      navtransition <- navtransition %>% select(-data)
+      navtransition <- navtransition %>% unnest_wider(transitionQualifier)
+      if (ncol(navtransition) > 2) #there was something to unnest
+      {
+        navtransition$...1 <- replace_na(navtransition$...1, "")
+        navtransition$...2 <- replace_na(navtransition$...2, "")
+        navtransition$transitionQualifier = paste(navtransition$...1, navtransition$...2, sep=";")
+        navtransition$transitionQualifier <- recode(navtransition$transitionQualifier, ";" = "")
+      } else {
+        navtransition$transitionQualifier <- NA
+      }
+      navtransition <- navtransition %>% select(transitionQualifier)
+      df_navigation <- cbind(df_navigation,  "transQualifiers"=navtransition)
     }
-    navtransition <- navtransition %>% select(transitionQualifier)
     
+    # navtransition <- df_navigation %>% select(user, time, data)
+    # if(!is.null(navtransition$data$transitionQualifiers)){  
+    #   navtransition <- df_navigation %>% select(user, time, data)
+    #   navtransition$transitionQualifier <-navtransition$data$transitionQualifiers  
+    #   navtransition <- navtransition %>% select(-data)
+    #   navtransition <- navtransition %>% unnest_wider(transitionQualifier)
+    #   if (ncol(navtransition) > 2) #there was something to unnest
+    #   {
+    #     navtransition$...1 <- replace_na(navtransition$...1, "")
+    #     navtransition$...2 <- replace_na(navtransition$...2, "")
+    #     navtransition$transitionQualifier = paste(navtransition$...1, navtransition$...2, sep=";")
+    #     navtransition$transitionQualifier <- recode(navtransition$transitionQualifier, ";" = "")
+    #   } else {
+    #     navtransition$transitionQualifier <- NA
+    #   }
+    #   navtransition <- navtransition %>% select(transitionQualifier)
+    # } else{navtransition <- data.frame(matrix(NA, nrow = n_nav))}
+    # 
     #windowId
-    navwindow <- df_navigation %>% select(user, time, data)
-    navwindow$window <- navwindow$data$windowId
-    navwindow <- navwindow %>% select(-data)
-    navwindow <- navwindow %>% unnest_wider(window)
-    navwindow <- navwindow %>% rename("windowID" = ...1)
-    navwindow <-  navwindow %>% select(-user,-time)
+    if(!is.null(df_navigation$data$windowId)){
+      navwindow <- df_navigation %>% select(user, time, data)
+      navwindow$window <- navwindow$data$windowId
+      navwindow <- navwindow %>% select(-data)
+      navwindow <- navwindow %>% unnest_wider(window)
+      navwindow <- navwindow %>% rename("windowID" = ...1)
+      navwindow <-  navwindow %>% select(-user,-time)
+      df_navigation <- cbind(df_navigation,   "window"=navwindow)
+    }
+    # navwindow <- df_navigation %>% select(user, time, data)
+    # navwindow$window <- navwindow$data$windowId
+    # navwindow <- navwindow %>% select(-data)
+    # navwindow <- navwindow %>% unnest_wider(window)
+    # navwindow <- navwindow %>% rename("windowID" = ...1)
+    # navwindow <-  navwindow %>% select(-user,-time)
     
     #RE-ASSEMBLE TABLE
-    df_navigation <- cbind(df_navigation,
-                           "tab"=navtabs,
-                           "changeInfo"=navchangeInfo,
-                           "activeInfo"=navactiveinfo,
-                           "deltas"=navdeltas,
-                           "transQualifiers"=navtransition,
-                           "window"=navwindow)
+    # df_navigation <- cbind(df_navigation,
+    #                        "tab"=navtabs,
+    #                        "changeInfo"=navchangeInfo,
+    #                        "activeInfo"=navactiveinfo,
+    #                        "deltas"=navdeltas,
+    #                        "transQualifiers"= navtransition,
+    #                        "window"=navwindow)
     
     #cleanup
     rm(navtabs,navchangeInfo,navactiveinfo,navdeltas,navtransition,navwindow)
     df_navigation <- df_navigation %>% select (-data) #cut data column
-    df_navigation <- df_navigation %>%
-      mutate(across(everything(), ~replace_na(.x, "NULL"))) #replace NAs
+    # df_navigation <- df_navigation %>%
+    #   mutate(across(everything(), ~replace_na(.x, "NULL"))) #replace NAs
     df_navigation <- as_tibble(df_navigation)
     
     #CHECK TABLE STRUCTURE
@@ -259,7 +308,7 @@ DBIMPORT <- function(filename){
     print("META : ")
     print(meta_loaded)
     print(" records loaded")
-  } else {error("PROBLEM| DB table META doesn't exist")}
+  } else {stop("PROBLEM| DB table META doesn't exist")}
   
   #LOAD STRUCTURE
   if ( dbExistsTable(con, "structure") ) {
@@ -291,7 +340,7 @@ DBIMPORT <- function(filename){
     print("STRUCTURE : ")
     print(structure_loaded)
     print(" records loaded")
-  } else {error("PROBLEM| DB table STRUCTURE doesn't exist")}
+  } else {stop("PROBLEM| DB table STRUCTURE doesn't exist")}
   
   #LOAD WINDOWS
   if ( dbExistsTable(con, "windows") ) {
@@ -319,7 +368,7 @@ DBIMPORT <- function(filename){
     print("WINDOWS : ")
     print(windows_loaded)
     print(" records loaded")
-  } else {error("PROBLEM| DB table WINDOWS doesn't exist")}
+  } else {stop("PROBLEM| DB table WINDOWS doesn't exist")}
   
   #LOAD TABS
   if ( dbExistsTable(con, "tabs") ) {
@@ -346,7 +395,7 @@ DBIMPORT <- function(filename){
     print("TABS : ")
     print(tabs_loaded)
     print(" records loaded")
-  } else {error("PROBLEM| DB table TABS doesn't exist")}
+  } else {stop("PROBLEM| DB table TABS doesn't exist")}
   
   #LOAD NAVIGATION
   if ( dbExistsTable(con, "navigation") ) {
@@ -373,7 +422,7 @@ DBIMPORT <- function(filename){
     print("NAVIGATION : ")
     print(navigation_loaded)
     print(" records loaded")
-  } else {error("PROBLEM| DB table NAVIGATION doesn't exist")}
+  } else {stop("PROBLEM| DB table NAVIGATION doesn't exist")}
   
   #CREATE FILE-RECORD [1]
   df_files = data.frame(NA)
@@ -411,7 +460,7 @@ DBIMPORT <- function(filename){
                           "SELECT count(*) from files")[1,1])
     
     if (db_after-db_before != 1) {
-      stop("WARNING | incomplete load to FILE-RECORD ", filename)
+      warning("FAILED | load to FILE-RECORD (may be dup)", filename)
     }
     
     
@@ -444,6 +493,9 @@ con <- DBI::dbConnect(odbc::odbc(),
 
 #LOAD THE FILES
 lapply (files, FUN=DBIMPORT)
+
+##TODO | problems with navigation table load, and default values.
+#investigate int vs double vals and how they are imported to the dB when NULL
 
 
 
