@@ -31,7 +31,7 @@ con <- DBI::dbConnect(odbc::odbc(),
 # UID      = rstudioapi::askForPassword("Database user"),
 # PWD      = rstudioapi::askForPassword("Database password"),
 
-file = "logs/hatter_1596831927537.json"
+file = "logs/hatter_1597114333092.json"
 
 #READ JSON FROM ONE FILE
 print(":: NOW READING :: ")
@@ -344,13 +344,27 @@ if ( dbExistsTable(con, "windows") ) {
 if ( dbExistsTable(con, "tabs") ) {
   
   #REMOVE ALL NAS 
-  df_tabs <- df_tabs %>% mutate(openerTabID = as.integer(openerTabID))
-  df_tabs$height <-df_tabs$height %>% replace_na(0)
-  df_tabs$index <-df_tabs$index %>% replace_na(0)
-  df_tabs$height <-df_tabs$height %>% replace_na(0)
-  df_tabs$width <-df_tabs$width %>% replace_na(0)
-  df_tabs$windowID <-df_tabs$windowID %>% replace_na(0)
-  df_tabs$openerTabID <-df_tabs$openerTabID %>% replace_na(0)
+  if (!is.null(df_tabs$openerTabID)){
+    df_tabs <- df_tabs %>% mutate(openerTabID = as.integer(openerTabID))
+  }
+  if (!is.null(df_tabs$height)){
+    df_tabs$height <-df_tabs$height %>% replace_na(0)
+  }
+  if (!is.null(df_tabs$index)){
+    df_tabs$index <-df_tabs$index %>% replace_na(0)
+  }
+  if (!is.null(df_tabs$height)){
+    df_tabs$height <-df_tabs$height %>% replace_na(0)
+  }
+  if (!is.null(df_tabs$width)){
+    df_tabs$width <-df_tabs$width %>% replace_na(0)
+  }
+  if (!is.null(df_tabs$windowID)){
+    df_tabs$windowID <-df_tabs$windowID %>% replace_na(0)
+  }
+  if (!is.null(df_tabs$openerTabID)){
+    df_tabs$openerTabID <-df_tabs$openerTabID %>% replace_na(0)
+  }
   
   #PREP
   n_tabs = dim(df_tabs)[1] #rows to write
@@ -381,8 +395,9 @@ if ( dbExistsTable(con, "tabs") ) {
 if ( dbExistsTable(con, "navigation") ) {
   
   #REMOVE NAS 
-  df_navigation <- df_navigation %>% mutate(transitionQualifier = as.character(transitionQualifier))
-  
+  if (!is.null(df_navigation$transitionQualifier)){
+    df_navigation <- df_navigation %>% mutate(transitionQualifier = as.character(transitionQualifier))
+  }
   if (!is.null(df_navigation$windowID)){
     df_navigation$windowID <- df_navigation$windowID %>% replace_na(0)  
   }
@@ -497,25 +512,27 @@ if ( dbExistsTable(con, "files") ) {
   db_before = dbGetQuery(con,  #get curr num rows
                          "SELECT count(*) from files")[1,1]
 
+  #DISCOVER TABLE DIMS
+  this_user <-df_meta$user[1]
+  this_start <- df_meta$time[1]
+  this_end <- df_meta$time[nrow(df_meta)]
+  
   df_files = data.frame(NA)
   df_files$file = file
   df_files$user = this_user
   df_files$start = this_start
   df_files$end = this_end
-  df_files$n_meta =  n_meta
-  df_files$n_nav =  n_nav
-  df_files$n_struct= n_struct
-  df_files$n_windows= n_windows
-  df_files$n_tabs= n_tabs
+  df_files$n_meta =  nrow(df_meta)
+  df_files$n_nav =  nrow(df_navigation)
+  df_files$n_struct= nrow(df_structure)
+  df_files$n_windows= nrow(df_windows)
+  df_files$n_tabs= nrow(df_tabs)
   df_files$l_meta =  meta_loaded
   df_files$l_nav =  navigation_loaded
   df_files$l_struct= structure_loaded
   df_files$l_windows= windows_loaded
   df_files$l_tabs=   tabs_loaded
   df_files <- df_files %>% select(-"NA.")
-  # files <- list(filename, user, start, end, n_meta, n_nav, n_struct)
-  # names(files) <- list("file", "user", "start", "end", "n_meta", "n_nav", "n_struct")
-  # t(files)
 
   result=tryCatch({
     dbWriteTable(con,"files",df_files, append = TRUE)},

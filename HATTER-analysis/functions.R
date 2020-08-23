@@ -263,7 +263,7 @@ DBIMPORT <- function(filename){
   print("::NOW IMPORTING ::")  
   print(filename)
    
-  df_meta       <-latest[[1]]
+  df_meta       <- latest[[1]]
   df_structure  <- latest[[2]]
   df_windows    <- latest[[3]]
   df_tabs       <- latest[[4]]
@@ -275,72 +275,78 @@ DBIMPORT <- function(filename){
       
   #LOAD META
   if ( dbExistsTable(con, "meta") ) {
-    n_meta = as.integer(dim(df_meta)[1]) #rows to write
-    db_before = as.integer(dbGetQuery(con,  #get curr num rows
-                           "SELECT count(*) from meta")[1,1])
+    
+    #REMOVE ALL NAS 
+    df_meta <- df_meta %>% mutate(result = as.character(result))
+    
+    #PREP
+    n_meta = dim(df_meta)[1] #rows to write
+    db_before = dbGetQuery(con,  #get curr num rows
+                           "SELECT count(*) from meta")[1,1]
     
     result=tryCatch({
-      dbWriteTable(con,"meta",df_meta, append = TRUE)
-      },
+      dbWriteTable(con,"meta",df_meta, append = TRUE)},
       warning = function(w) {w},
       error = function(e) {e},
       finally = {}
     )
-    print("INSERTING META")
+    cat ("LOADING META ...")
     print (result)
-   
-    db_after = as.integer(dbGetQuery(con,  #get curr num rows
-                          "SELECT count(*) from meta")[1,1])
-   
+    
+    db_after = dbGetQuery(con,  #get curr num rows
+                          "SELECT count(*) from meta")[1,1]
     meta_loaded = db_after-db_before
-   
     if (meta_loaded != n_meta) {
-      warning("WARNING | incomplete load to META ", filename)
+      warning("WARNING | incomplete load to META ", file)
     }
-    
-    
-    print("META : ")
-    print(meta_loaded)
-    print(" records loaded")
+    cat("META | ")
+    cat(as.integer(meta_loaded))
+    cat(" records loaded")
   } else {stop("PROBLEM| DB table META doesn't exist")}
   
   #LOAD STRUCTURE
   if ( dbExistsTable(con, "structure") ) {
     
+    #PREP
     n_struct = dim(df_structure)[1] #rows to write
-    db_before = as.integer(dbGetQuery(con,  #get curr num rows
-                           "SELECT count(*) from structure")[1,1])
+    db_before = dbGetQuery(con,  #get curr num rows
+                           "SELECT count(*) from structure")[1,1]
+    
     result=tryCatch({
       dbWriteTable(con,"structure",df_structure, append = TRUE)},
       warning = function(w) {w},
-      error = function(e) {e},
+      error = function(e) {print(e)},
       finally = {}
     )
-    print("INSERTING STRUCTURE")
+    cat ("LOADING STRUCTURE ...")
     print (result)
     
-    
-    db_after = as.integer(dbGetQuery(con,  #get curr num rows
-                          "SELECT count(*) from structure")[1,1])
-    
-    
+    db_after = dbGetQuery(con,  #get curr num rows
+                          "SELECT count(*) from structure")[1,1]
     structure_loaded = db_after-db_before
-    
     if (structure_loaded != n_struct) {
-      warning("WARNING | incomplete load to STRUCTURE ", filename)
+      warning("WARNING | incomplete load to STRUCTURE ", file)
     }
-   
-    
-    print("STRUCTURE : ")
-    print(structure_loaded)
-    print(" records loaded")
+    cat("STRUCTURE | ")
+    cat(as.integer(structure_loaded))
+    cat(" records loaded")
   } else {stop("PROBLEM| DB table STRUCTURE doesn't exist")}
   
   #LOAD WINDOWS
   if ( dbExistsTable(con, "windows") ) {
+    
+    #REMOVE ALL NAS 
+    window_types <- unlist(lapply(df_windows,class))
+    # df_windows <-df_windows %>% replace_na(list(window_types))
+    df_windows$height <-df_windows$height %>% replace_na(0)
+    df_windows$left <-df_windows$left %>% replace_na(0)
+    df_windows$top <-df_windows$top %>% replace_na(0)
+    df_windows$width <-df_windows$width %>% replace_na(0)
+    
+    #PREP
     n_windows = dim(df_windows)[1] #rows to write
-    db_before = as.integer(dbGetQuery(con,  #get curr num rows
-                           "SELECT count(*) from windows")[1,1])
+    db_before = dbGetQuery(con,  #get curr num rows
+                           "SELECT count(*) from windows")[1,1]
     
     result=tryCatch({
       dbWriteTable(con,"windows",df_windows, append = TRUE)},
@@ -348,27 +354,50 @@ DBIMPORT <- function(filename){
       error = function(e) {e},
       finally = {}
     )
-    print("INSERTING WINDOWS")
+    cat ("LOADING WINDOWS ...")
     print (result)
     
-    db_after = as.integer(dbGetQuery(con,  #get curr num rows
-                          "SELECT count(*) from windows")[1,1])
+    db_after = dbGetQuery(con,  #get curr num rows
+                          "SELECT count(*) from windows")[1,1]
     windows_loaded = db_after-db_before
     if (windows_loaded != n_windows) {
-      warning("WARNING | incomplete load to WINDOWS ", filename)
+      warning("WARNING | incomplete load to WINDOWS ", file)
     }
-    
-    
-    print("WINDOWS : ")
-    print(windows_loaded)
-    print(" records loaded")
+    cat("WINDOWS | ")
+    cat(as.integer(windows_loaded))
+    cat(" records loaded")
   } else {stop("PROBLEM| DB table WINDOWS doesn't exist")}
   
   #LOAD TABS
   if ( dbExistsTable(con, "tabs") ) {
+    
+    #REMOVE ALL NAS 
+    if (!is.null(df_tabs$openerTabID)){
+      df_tabs <- df_tabs %>% mutate(openerTabID = as.integer(openerTabID))
+    }
+    if (!is.null(df_tabs$height)){
+      df_tabs$height <-df_tabs$height %>% replace_na(0)
+    }
+    if (!is.null(df_tabs$index)){
+      df_tabs$index <-df_tabs$index %>% replace_na(0)
+    }
+    if (!is.null(df_tabs$height)){
+      df_tabs$height <-df_tabs$height %>% replace_na(0)
+    }
+    if (!is.null(df_tabs$width)){
+      df_tabs$width <-df_tabs$width %>% replace_na(0)
+    }
+    if (!is.null(df_tabs$windowID)){
+      df_tabs$windowID <-df_tabs$windowID %>% replace_na(0)
+    }
+    if (!is.null(df_tabs$openerTabID)){
+      df_tabs$openerTabID <-df_tabs$openerTabID %>% replace_na(0)
+    }
+    
+    #PREP
     n_tabs = dim(df_tabs)[1] #rows to write
-    db_before = as.integer(dbGetQuery(con,  #get curr num rows
-                           "SELECT count(*) from tabs")[1,1])
+    db_before = dbGetQuery(con,  #get curr num rows
+                           "SELECT count(*) from tabs")[1,1]
     
     result=tryCatch({
       dbWriteTable(con,"tabs",df_tabs, append = TRUE)},
@@ -376,26 +405,114 @@ DBIMPORT <- function(filename){
       error = function(e) {e},
       finally = {}
     )
-    print("INSERTING TABS")
+    cat ("LOADING TABS ...")
     print (result)
     
-    db_after = as.integer(dbGetQuery(con,  #get curr num rows
-                          "SELECT count(*) from tabs")[1,1])
+    db_after = dbGetQuery(con,  #get curr num rows
+                          "SELECT count(*) from tabs")[1,1]
     tabs_loaded = db_after-db_before
     if (tabs_loaded != n_tabs) {
-      warning("WARNING | incomplete load to TABS ", filename)
+      warning("WARNING | incomplete load to TABS ", file)
     }
-    
-    print("TABS : ")
-    print(tabs_loaded)
-    print(" records loaded")
+    cat("TABS | ")
+    cat(as.integer(tabs_loaded))
+    cat(" records loaded")
   } else {stop("PROBLEM| DB table TABS doesn't exist")}
   
   #LOAD NAVIGATION
   if ( dbExistsTable(con, "navigation") ) {
+    
+    #REMOVE NAS 
+    if (!is.null(df_navigation$transitionQualifier)){
+      df_navigation <- df_navigation %>% mutate(transitionQualifier = as.character(transitionQualifier))
+    }
+    if (!is.null(df_navigation$windowID)){
+      df_navigation$windowID <- df_navigation$windowID %>% replace_na(0)  
+    }
+    if (!is.null(df_navigation$tabId)){
+      df_navigation$tabId <-df_navigation$tabId %>% replace_na(0)
+    }
+    if (!is.null(df_navigation$frameId)){
+      df_navigation$frameId <-df_navigation$frameId %>% replace_na(0)
+    }
+    if (!is.null(df_navigation$parentFrameId)){
+      df_navigation$parentFrameId <-df_navigation$parentFrameId %>% replace_na(0)
+    }
+    if (!is.null(df_navigation$processId)){
+      df_navigation$processId <- df_navigation$processId %>% replace_na(0)
+    }
+    
+    if (!is.null(df_navigation$tab.height)){
+      df_navigation$tab.height <- df_navigation$tab.height %>% replace_na(0)
+    }
+    if (!is.null(df_navigation$tab.id)){
+      df_navigation$tab.id <- df_navigation$tab.id %>% replace_na(0)
+    }
+    if (!is.null(df_navigation$tab.index)){
+      df_navigation$tab.index <- df_navigation$tab.index %>% replace_na(0)
+    }
+    if (!is.null(df_navigation$tab.openerTabId)){
+      df_navigation$tab.openerTabId <- df_navigation$tab.openerTabId %>% replace_na(0)
+    }
+    if (!is.null(df_navigation$tab.width)){
+      df_navigation$tab.width <- df_navigation$tab.width %>% replace_na(0)
+    }
+    if (!is.null(df_navigation$tab.windowId)){
+      df_navigation$tab.windowId <- df_navigation$tab.windowId %>% replace_na(0)
+    }
+    
+    if (!is.null(df_navigation$activeInfo.tabId)){
+      df_navigation$activeInfo.tabId <- df_navigation$activeInfo.tabId %>% replace_na(0)
+    }
+    if (!is.null(df_navigation$activeInfo.windowId)){
+      df_navigation$activeInfo.windowId <- df_navigation$activeInfo.windowId %>% replace_na(0)
+    }
+    
+    if (!is.null(df_navigation$deltas.windowId)){
+      df_navigation$deltas.windowId <- df_navigation$deltas.windowId %>% replace_na(0)
+    }
+    if (!is.null(df_navigation$deltas.fromIndex)){
+      df_navigation$deltas.fromIndex <- df_navigation$deltas.fromIndex %>% replace_na(0)
+    }
+    if (!is.null(df_navigation$deltas.toIndex)){
+      df_navigation$deltas.toIndex <- df_navigation$deltas.toIndex %>% replace_na(0)
+    }
+    if (!is.null(df_navigation$deltas.oldPosition)){
+      df_navigation$deltas.oldPosition <- df_navigation$deltas.oldPosition %>% replace_na(0)
+    }
+    if (!is.null(df_navigation$deltas.oldWindowId)){
+      df_navigation$deltas.oldWindowId <- df_navigation$deltas.oldWindowId %>% replace_na(0)  
+    }
+    if (!is.null(df_navigation$deltas.newWindowId)){
+      df_navigation$deltas.newWindowId <- df_navigation$deltas.newWindowId %>% replace_na(0)  
+    }
+    if (!is.null(df_navigation$deltas.newPosition)){
+      df_navigation$deltas.newPosition <- df_navigation$deltas.newPosition %>% replace_na(0)  
+    }
+    
+    if (!is.null(df_navigation$window.windowID)){
+      df_navigation$window.windowID <- df_navigation$window.windowID %>% replace_na(0)
+    }
+    if (!is.null(df_navigation$window.height)){
+      df_navigation$window.height <- df_navigation$window.height %>% replace_na(0)
+    }
+    if (!is.null(df_navigation$window.id)){
+      df_navigation$window.id <- df_navigation$window.id %>% replace_na(0)
+    }
+    if (!is.null(df_navigation$window.left)){
+      df_navigation$window.left <- df_navigation$window.left %>% replace_na(0)
+    }
+    if (!is.null(df_navigation$window.top)){
+      df_navigation$window.top <- df_navigation$window.top %>% replace_na(0)
+    }
+    if (!is.null(df_navigation$window.width)){
+      df_navigation$window.width <- df_navigation$window.width %>% replace_na(0)
+    }
+    
+    #PREP
     n_navigation = dim(df_navigation)[1] #rows to write
     db_before = as.integer(dbGetQuery(con,  #get curr num rows
-                           "SELECT count(*) from navigation")[1,1])
+                                      "SELECT count(*) from navigation")[1,1])
     
     result=tryCatch({
       dbWriteTable(con,"navigation",df_navigation, append = TRUE)},
@@ -403,64 +520,67 @@ DBIMPORT <- function(filename){
       error = function(e) {e},
       finally = {}
     )
-    print("INSERTING NAVIGATION")
+    cat ("LOADING NAVIGATION ...")
     print (result)
     
     db_after = as.integer(dbGetQuery(con,  #get curr num rows
-                          "SELECT count(*) from navigation")[1,1])
+                                     "SELECT count(*) from navigation")[1,1])
     navigation_loaded = db_after-db_before
     if (navigation_loaded != n_navigation) {
-      warning("WARNING | incomplete load to NAVIGATION ", filename)
+      warning("WARNING | incomplete load to NAVIGATION ", file)
     }
-    
-    print("NAVIGATION : ")
-    print(navigation_loaded)
-    print(" records loaded")
+    cat("NAVIGATION | ")
+    cat(as.integer(navigation_loaded))
+    cat(" records loaded")
   } else {stop("PROBLEM| DB table NAVIGATION doesn't exist")}
-  
-  #CREATE FILE-RECORD [1]
-  df_files = data.frame(NA)
-  df_files$file = filename
-  df_files$user = df_meta$user[1]
-  df_files$start = df_meta$time[1]
-  df_files$end = df_meta$time[nrow(df_meta)]
-  df_files$n_meta =  dim(df_meta)[1] #rows to write
-  df_files$n_nav =  dim(df_navigation)[1] #rows to write
-  df_files$n_struct= dim(df_structure)[1] #rows to write
-  df_files$n_windows= dim(df_windows)[1]
-  df_files$n_tabs= dim(df_tabs)[1] #rows to write
-  df_files$l_meta =  meta_loaded
-  df_files$l_nav =  navigation_loaded
-  df_files$l_struct= structure_loaded
-  df_files$l_windows= windows_loaded
-  df_files$l_tabs=   tabs_loaded
-  df_files <- df_files %>% select(-"NA.")
   
   #LOAD FILE-RECORD
   if ( dbExistsTable(con, "files") ) {
     
-    db_before = as.integer(dbGetQuery(con,  #get curr num rows
-                           "SELECT count(*) from files")[1,1])
+    db_before = dbGetQuery(con,  #get curr num rows
+                           "SELECT count(*) from files")[1,1]
+    
+    #DISCOVER TABLE DIMS
+    this_user <-df_meta$user[1]
+    this_start <- df_meta$time[1]
+    this_end <- df_meta$time[nrow(df_meta)]
+    file = filename
+    
+    df_files = data.frame(NA)
+    df_files$file = file
+    df_files$user = this_user
+    df_files$start = this_start
+    df_files$end = this_end
+    df_files$n_meta =  nrow(df_meta)
+    df_files$n_nav =  nrow(df_navigation)
+    df_files$n_struct= nrow(df_structure)
+    df_files$n_windows= nrow(df_windows)
+    df_files$n_tabs= nrow(df_tabs)
+    df_files$l_meta =  meta_loaded
+    df_files$l_nav =  navigation_loaded
+    df_files$l_struct= structure_loaded
+    df_files$l_windows= windows_loaded
+    df_files$l_tabs=   tabs_loaded
+    df_files <- df_files %>% select(-"NA.")
+    
     result=tryCatch({
       dbWriteTable(con,"files",df_files, append = TRUE)},
       warning = function(w) {w},
       error = function(e) {e},
       finally = {}
     )
-    print("INSERTING FILE")
+    cat ("LOADING FILE-RECORD ...")
     print (result)
     
-    db_after = as.integer(dbGetQuery(con,  #get curr num rows
-                          "SELECT count(*) from files")[1,1])
+    db_after = dbGetQuery(con,  #get curr num rows
+                          "SELECT count(*) from files")[1,1]
     
     if (db_after-db_before != 1) {
-      warning("FAILED | load to FILE-RECORD (may be dup)", filename)
+      stop("WARNING | incomplete load to FILE-RECORD ", file)
     }
-    
-    
-    print("FILE-RECORD : ")
-    print(db_after-db_before)
-    print(" records loaded")
+    cat("FILE-RECORD | ")
+    cat(as.integer(db_after-db_before))
+    cat(" records loaded")
   } else {warning("PROBLEM| DB table FILES doesn't exist")}
   
   print("::DONE IMPORTING ::")  
@@ -469,17 +589,9 @@ DBIMPORT <- function(filename){
 
 #FUNCTION LOADALL (reads files from log dir and imports to DB)
 LOADALL <- function(){
+  
   #GET list of files 
   files = list.files("./logs")
-  
-  # #CONNECT to database
-  # con <- DBI::dbConnect(odbc::odbc(),
-  #                       Driver   = "/usr/local/mysql-connector-odbc-8.0.21-macos10.15-x86-64bit/lib/libmyodbc8a.so",
-  #                       Server   = "127.0.0.1",
-  #                       Database = "hatter",
-  #                       UID      = rstudioapi::askForPassword("Database user"),
-  #                       PWD      = rstudioapi::askForPassword("Database password"),
-  #                       Port     = 3306)
   
   #LOAD THE FILES
   lapply (files, FUN=DBIMPORT)
