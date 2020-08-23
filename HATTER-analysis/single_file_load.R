@@ -31,7 +31,8 @@ con <- DBI::dbConnect(odbc::odbc(),
 # UID      = rstudioapi::askForPassword("Database user"),
 # PWD      = rstudioapi::askForPassword("Database password"),
 
-file = "logs/hatter_1597114333092.json"
+filename = "logs/RK_8.7.2020.json"
+file = filename
 
 #READ JSON FROM ONE FILE
 print(":: NOW READING :: ")
@@ -80,11 +81,18 @@ if(n_meta != 0){
     df_meta$userAgent <- df_meta$userAgent[1]
   }
   
-  #SET FILE LEVEL VARS
+  #SET FILE LEVEL VARS 
   this_user <-df_meta$user[1]
   this_start <- df_meta$time[1]
   this_end <- df_meta$time[nrow(df_meta)]
   df_meta <- as_tibble(df_meta)
+  
+  #DOUBLE CHECK USER IDENTIFIER
+  if (is.null(this_user) || this_user==""){
+    this_user <- rstudioapi::askForPassword("user alias for this file")
+    df_meta$user <- this_user
+  }
+  
   
   
   #DF STRUCTURE CHECKS
@@ -244,6 +252,15 @@ if (is.null (df_navigation$user)) {stop("PROBLEM | No user in nav : ",file) }
 
 
 #STEP 2 :: IMPORT DATA TO DB
+
+#DISCOVER TABLE DIMS
+this_user <-df_meta$user[1]
+this_start <- df_meta$time[1]
+this_end <- df_meta$time[nrow(df_meta)]
+file = filename
+
+
+
 
 #LOAD META
 if ( dbExistsTable(con, "meta") ) {
@@ -512,11 +529,6 @@ if ( dbExistsTable(con, "files") ) {
   db_before = dbGetQuery(con,  #get curr num rows
                          "SELECT count(*) from files")[1,1]
 
-  #DISCOVER TABLE DIMS
-  this_user <-df_meta$user[1]
-  this_start <- df_meta$time[1]
-  this_end <- df_meta$time[nrow(df_meta)]
-  
   df_files = data.frame(NA)
   df_files$file = file
   df_files$user = this_user

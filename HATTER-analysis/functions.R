@@ -61,6 +61,14 @@ LOADFILE <- function(filename)
     this_end <- df_meta$time[nrow(df_meta)]
     df_meta <- as_tibble(df_meta)
     
+    #DOUBLE CHECK USER IDENTIFIER
+    if (is.null(this_user) || this_user==""){
+      this_user <- rstudioapi::askForPassword("user alias for this file")
+      df_meta$user <- this_user
+    }
+      
+    
+    
     #DF STRUCTURE CHECKS 
     if (is.null (df_meta$time)) {stop("PROBLEM | No time in meta : ",file) }
     if (is.null (df_meta$handler)) {stop("PROBLEM | No handler in meta : ",file) }
@@ -268,6 +276,12 @@ DBIMPORT <- function(filename){
   df_windows    <- latest[[3]]
   df_tabs       <- latest[[4]]
   df_navigation <- latest[[5]]
+  
+  #DISCOVER TABLE DIMS
+  this_user <-df_meta$user[1]
+  this_start <- df_meta$time[1]
+  this_end <- df_meta$time[nrow(df_meta)]
+  file = filename
   
   # does current file overlap with existing file?
   #if YES ... fak. need to slice the file, only include non-duplicate entries
@@ -539,13 +553,7 @@ DBIMPORT <- function(filename){
     
     db_before = dbGetQuery(con,  #get curr num rows
                            "SELECT count(*) from files")[1,1]
-    
-    #DISCOVER TABLE DIMS
-    this_user <-df_meta$user[1]
-    this_start <- df_meta$time[1]
-    this_end <- df_meta$time[nrow(df_meta)]
-    file = filename
-    
+  
     df_files = data.frame(NA)
     df_files$file = file
     df_files$user = this_user
