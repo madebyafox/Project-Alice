@@ -1,0 +1,163 @@
+---
+title: "R Notebook"
+output:
+  html_document: default
+  html_notebook: default
+---
+
+```{r configuration}
+#loading libs
+require(tidyverse) #all things
+require(jsonlite) #JSON import
+require(tibble)
+require(tidyr)
+library(dbplyr)
+library(DBI) #https://cran.r-project.org/web/packages/DBI/vignettes/spec.html
+library(odbc)
+library(lubridate) #for date manipulation
+library(scales) #for additional parameters on ggplot scales
+
+#configuration options
+options(scipen=999) #turn off sci-notation
+options(stringsAsFactors=FALSE) #for some unnesting txns
+setwd("~/Sites/RESEARCH/ProjectAlice/Project-Alice/HATTER-analysis") #set working dir
+
+#include custom functions
+source("functions.R")
+```
+
+
+```{r database_connection}
+con <- DBI::dbConnect(odbc::odbc(),
+                      Driver   = "/usr/local/mysql-connector-odbc-8.0.21-macos10.15-x86-64bit/lib/libmyodbc8a.so",
+                      Server   = "127.0.0.1",
+                      Database = "hatter",
+                      # UID      = rstudioapi::askForPassword("Database user"),
+                      # PWD      = rstudioapi::askForPassword("Database password"),
+                      UID = "ruser",
+                      PWD = "ruser",
+                      Port     = 3306)
+
+```
+
+```{r data_load}
+#import SQL or
+#load all files in logs/
+#LOADALL()
+```
+
+```{r}
+# df_loadedFiles <- dbGetQuery(con, "SELECT * FROM files")
+#amy user == 105169626503331372061
+# dbGetQuery(con, "SELECT * from structure 
+#                 WHERE user = 105169626503331372061")
+# 
+
+meta <- dbGetQuery(con, "SELECT count(*), user, time from meta
+                WHERE user = 105169626503331372061
+                GROUP BY time ")
+
+
+
+# windows <- dbGetQuery(con, "SELECT count(*), user, time from windows 
+#                 WHERE user = 105169626503331372061
+#                 GROUP BY time ")
+# 
+# tabs <- dbGetQuery(con, "SELECT count(*), user, time from tabs 
+#                 WHERE user = 105169626503331372061
+#                 GROUP BY time ")
+
+#retrieve number of tabs for each window id and time       
+db_window_structure <- dbGetQuery(con, "SELECT user, time, windowID, count(*) as tabCount
+		             FROM tabs
+                 WHERE user = 105169626503331372061 
+                 GROUP BY windowID, time;")
+
+#convert to tibble
+db_window_structure <- as_tibble(db_window_structure)
+
+#summarize number of tabs and windows at any user-time
+df_byTime <- db_window_structure %>% 
+        mutate(datetime = as_datetime(time/1000)) %>% 
+        mutate(date = as_date(datetime)) %>% 
+        mutate(hms = hms::as_hms(datetime)) %>% 
+        group_by(user, time, datetime, date, hms) %>%
+        summarise(n_windows=n(), n_tabs=as.integer(sum(tabCount)), .groups = 'drop') 
+        
+
+#filter for max num windows per day
+df_filtered_max  <- df_byTime %>% 
+  group_by(date) %>% 
+  summarise(entries=n(), n_windows = max(n_windows), n_tabs=max(n_tabs), .groups = 'drop') 
+  
+#filter for min num tabs per day
+df_filtered_min  <- df_byTime %>% 
+  group_by(date) %>% 
+  summarise(entries=n(), n_windows = min(n_windows), n_tabs=min(n_tabs), .groups = 'drop')         
+df_filtered <- rbind(df_filtered_max,df_filtered_min) %>% 
+  arrange(date)  
+
+
+# df_byUser <- df_byTime %>% 
+#         group_by(user) %>% 
+#         summarize(samples=n(), total_windows=sum(n_windows), total_tabs=sum(n_tabs))
+
+
+# df
+# user # windows, #tabs 
+```
+
+
+```{r plot_structure}
+
+#What is the relationship between # of windows and #tabs (per user)
+#df_byTime :: time, user, n_windows, n_tabs 
+ggplot(df_byTime, aes(x=n_windows, y=n_tabs)) +
+    geom_point(shape=20, alpha=0.2) +
+    geom_smooth(method=lm) +  # Add a loess smoothed fit curve with confidence region
+    geom_jitter() +
+    labs(y="number of tabs", x = "number of windows")+
+    ggtitle("Number of Tabs in Each Window")
+
+
+ggplot(df_filtered, aes(x=n_windows, y=n_tabs)) +
+    geom_point(shape=20, alpha=0.2) +
+    geom_smooth(method=lm) +  # Add a loess smoothed fit curve with confidence region
+    geom_jitter() +
+    labs(y="number of tabs", x = "number of windows")+
+    ggtitle("Number of Tabs in Each Window")
+plot 
+
+
+```
+
+
+```{r plot_structure_over time}
+
+#What is the relationship between # of windows and #tabs (per user) OVER TIME
+
+#df_filtered :: date, n_windows, n_tabs
+#m_filtered :: date, type, num 
+#RESHAPE data 
+m_filtered <-gather(df_filtered,'n_windows','n_tabs',key="type",value="count")
+
+
+numdates <- nrow(df_filtered)
+
+ggplot(m_filtered, aes(x=date, y=count, color=type)) +
+    geom_point(shape=20, alpha=1) +
+    scale_y_continuous(breaks = pretty_breaks(n = 8)) +
+    # scale_x_continuous(breaks = pretty_breaks(n = numdates)) +
+    scale_x_date(date_breaks = "5 day", date_labels = "%D",date_minor_breaks = "1 day")+
+    labs(y="number of items open", x = "time")+
+    ggtitle("Number of Items Open over Time") +
+    facet_grid(cols=vars(type))
+
+
+# geom_smooth(method=lm) +  # Add a loess smoothed fit curve with confidence region
+```
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file).
