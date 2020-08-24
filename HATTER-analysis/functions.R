@@ -115,7 +115,7 @@ LOADFILE <- function(filename)
     if(!is.null(df_tabs$id)){df_tabs <- df_tabs %>% rename(tabID = id)}
     if(!is.null(df_tabs$windowId)){df_tabs <- df_tabs %>% rename(windowID = windowId)}
     if(!is.null(df_tabs$openerTabId)){df_tabs <- df_tabs %>% rename(openerTabID = openerTabId)}
-    
+    if(!is.null(df_tabs$tab)){df_tabs <- df_tabs %>%  select (-tab)} #FOR SOME REASON ONE OF ROB'S FILES PERSISTS A TAB FIELD AFTER UNNESTING TABS 
     df_tabs <- as_tibble(df_tabs)
     
     #CLEANUP

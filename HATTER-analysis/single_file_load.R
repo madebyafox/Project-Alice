@@ -31,7 +31,7 @@ con <- DBI::dbConnect(odbc::odbc(),
 # UID      = rstudioapi::askForPassword("Database user"),
 # PWD      = rstudioapi::askForPassword("Database password"),
 
-filename = "logs/RK_8.7.2020.json"
+filename = "logs/rk_hatter_1598292216466.json"
 file = filename
 
 #READ JSON FROM ONE FILE
@@ -140,12 +140,16 @@ df_tabs$time <- as.numeric(df_tabs$time)
 if(!is.null(df_tabs$id)){df_tabs <- df_tabs %>% rename(tabID = id)}
 if(!is.null(df_tabs$windowId)){df_tabs <- df_tabs %>% rename(windowID = windowId)}
 if(!is.null(df_tabs$openerTabId)){df_tabs <- df_tabs %>% rename(openerTabID = openerTabId)}
+if(!is.null(df_tabs$tab)){df_tabs <- df_tabs %>%  select (-tab)} #FOR SOME REASON ONE OF ROB'S FILES PERSISTS A TAB FIELD AFTER UNNESTING TABS 
 df_tabs <- as_tibble(df_tabs)
 
 #CLEANUP
 df_structure <- df_structure %>% select (-id, -window, -data)
 df_windows <-df_windows %>%  select(-tabs)
 df_tabs <- df_tabs %>%  select (-favIconUrl, -mutedInfo, -autoDiscardable, -audible, -incognito)
+
+
+
 
 #CHECK TABLE STRUCTURE
 if (is.null (df_structure$time)) {stop("PROBLEM | No TIME in structure : ",file) }
