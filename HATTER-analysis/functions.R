@@ -434,7 +434,7 @@ DBIMPORT <- function(filename){
   } else {stop("PROBLEM| DB table TABS doesn't exist")}
   
   #LOAD NAVIGATION
-  if ( dbExistsTable(con, "navigation") ) {
+  if ( dbExistsTable(con, "navigation") && exists("df_navigation")) {
     
     #REMOVE NAS 
     if (!is.null(df_navigation$transitionQualifier)){
@@ -554,23 +554,49 @@ DBIMPORT <- function(filename){
     db_before = dbGetQuery(con,  #get curr num rows
                            "SELECT count(*) from files")[1,1]
   
+    # df_files = data.frame(NA)
+    # df_files$file = file
+    # df_files$user = this_user
+    # df_files$start = this_start
+    # df_files$end = this_end
+    # df_files$n_meta =  nrow(df_meta)
+    # df_files$n_nav =  nrow(df_navigation)
+    # df_files$n_struct= nrow(df_structure)
+    # df_files$n_windows= nrow(df_windows)
+    # df_files$n_tabs= nrow(df_tabs)
+    # df_files$l_meta =  meta_loaded
+    # df_files$l_nav =  navigation_loaded
+    # df_files$l_struct= structure_loaded
+    # df_files$l_windows= windows_loaded
+    # df_files$l_tabs=   tabs_loaded
+    # df_files <- df_files %>% select(-"NA.")
+
     df_files = data.frame(NA)
     df_files$file = file
     df_files$user = this_user
     df_files$start = this_start
     df_files$end = this_end
     df_files$n_meta =  nrow(df_meta)
-    df_files$n_nav =  nrow(df_navigation)
+    if (exists("df_navigation")){
+      df_files$n_nav =  nrow(df_navigation)  
+    } else {
+      df_files$n_nav =  0
+    }
     df_files$n_struct= nrow(df_structure)
     df_files$n_windows= nrow(df_windows)
     df_files$n_tabs= nrow(df_tabs)
     df_files$l_meta =  meta_loaded
-    df_files$l_nav =  navigation_loaded
+    if (exists("df_navigation")){
+      df_files$l_nav =  navigation_loaded
+    } else {
+      df_files$l_nav =  0
+    }
     df_files$l_struct= structure_loaded
     df_files$l_windows= windows_loaded
     df_files$l_tabs=   tabs_loaded
     df_files <- df_files %>% select(-"NA.")
     
+        
     result=tryCatch({
       dbWriteTable(con,"files",df_files, append = TRUE)},
       warning = function(w) {w},

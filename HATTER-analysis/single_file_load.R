@@ -31,7 +31,7 @@ con <- DBI::dbConnect(odbc::odbc(),
 # UID      = rstudioapi::askForPassword("Database user"),
 # PWD      = rstudioapi::askForPassword("Database password"),
 
-filename = "logs/rk_hatter_1598292216466.json"
+filename = "logs/ss_hatter_1598405259026.json"
 file = filename
 
 #READ JSON FROM ONE FILE
@@ -413,7 +413,7 @@ if ( dbExistsTable(con, "tabs") ) {
 } else {stop("PROBLEM| DB table TABS doesn't exist")}
 
 #LOAD NAVIGATION
-if ( dbExistsTable(con, "navigation") ) {
+if ( dbExistsTable(con, "navigation") && exists("df_navigation")) {
   
   #REMOVE NAS 
   if (!is.null(df_navigation$transitionQualifier)){
@@ -525,7 +525,7 @@ if ( dbExistsTable(con, "navigation") ) {
   cat("NAVIGATION | ")
   cat(as.integer(navigation_loaded))
   cat(" records loaded")
-} else {stop("PROBLEM| DB table NAVIGATION doesn't exist")}
+} else {warning("PROBLEM| DB table NAVIGATION doesn't exist")}
 
 #LOAD FILE-RECORD
 if ( dbExistsTable(con, "files") ) {
@@ -539,12 +539,20 @@ if ( dbExistsTable(con, "files") ) {
   df_files$start = this_start
   df_files$end = this_end
   df_files$n_meta =  nrow(df_meta)
-  df_files$n_nav =  nrow(df_navigation)
+  if (exists("df_navigation")){
+    df_files$n_nav =  nrow(df_navigation)  
+  } else {
+    df_files$n_nav =  0
+  }
   df_files$n_struct= nrow(df_structure)
   df_files$n_windows= nrow(df_windows)
   df_files$n_tabs= nrow(df_tabs)
   df_files$l_meta =  meta_loaded
-  df_files$l_nav =  navigation_loaded
+  if (exists("df_navigation")){
+    df_files$l_nav =  navigation_loaded
+  } else {
+    df_files$l_nav =  0
+  }
   df_files$l_struct= structure_loaded
   df_files$l_windows= windows_loaded
   df_files$l_tabs=   tabs_loaded
