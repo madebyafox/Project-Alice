@@ -1,0 +1,376 @@
+---
+title: "Project Alice ContentAnalysis"
+author: "Amy Rae Fox"
+date: "8/31/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#loading libs
+require(tidyverse) #all things
+# require(jsonlite) #JSON import
+# require(tibble)
+# require(tidyr)
+# library(dbplyr)
+# library(DBI) #https://cran.r-project.org/web/packages/DBI/vignettes/spec.html
+# library(odbc)
+library(lubridate) #for date manipulation
+# library(scales) #for additional parameters on ggplot scales
+# library(reactable) # for html tables
+
+library(timevis) # for timeline visualization
+
+#configuration options
+options(scipen=999) #turn off sci-notation
+options(stringsAsFactors=FALSE) #for some unnesting txns
+setwd("~/Sites/RESEARCH/ProjectAlice/Project-Alice/HATTER-analysis") #set working dir
+
+#include custom functions
+
+```
+
+## R Markdown
+
+```{r P2A1S2.2_sam.csv}
+
+df <- read.csv(file = "elans/P2A1S2.2_sam.csv", head = TRUE, sep=",")
+
+#SETUP DATES 
+df <- df %>% select(-X,-duration) %>% 
+      mutate(type = "range") %>% 
+      mutate(start = hms::as_hms(start)) %>% 
+      mutate(end = hms::as_hms(end)) %>% 
+      mutate(group ="")
+
+#SETUP START DATE 
+df[,c("start", "end")] <- sapply(df[,c("start", "end")], function(x) paste(Sys.Date(), x))
+
+#EXTRACT NOTES
+df_notes <- df %>% filter(tier == "NOTES")
+df_events <- df %>% filter(tier == "EVENTS")
+df_query <- df %>% filter(tier == "Search Query")
+df_engine <- df %>% filter(tier == "Search Engine")
+df_mode <- df %>% filter(tier == "Search Mode")
+
+#FILTER OUT NON-TIMELINE EVENTS 
+df <- df %>% filter(!(tier %in% c("PHASE","NOTES","EVENTS","Search Query","Search Engine","Search Mode")))
+
+#EVENTS 
+# new tab open in
+# open in place
+# next search page
+# download
+# new doc
+# transfer
+# open app
+# spatial
+
+queryClass = "background-color:#990D35; border-color:#990D35"
+
+browseClass = "background-color:#F36416; border-color:#F36416"
+
+reviewClass = "background-color:#FFB60A; border-color:#FFB60A"
+skimClass = "background-color:#FFC233; border-color:#FFC233"
+readClass = "background-color:#FFC847; border-color:#FFC847"
+
+annotateClass = "background-color:#86C133; border-color:#86C133"
+noteClass = "background-color:#90CC3E; border-color:#90CC3E"
+writeClass = "background-color:#A3D45E; border-color:#A3D45E"
+
+organizeClass = "background-color:#0267C1; border-color:#0267C1"
+otherClass =  "background-color:black; border-color:black"
+
+#SET GROUPS
+browsing <- df$content == "browsing"
+df$group[browsing] <- "browsing"
+df$style[browsing] <- browseClass
+
+reviewing <- df$content == "reviewing"
+df$group[reviewing] <- "consume"
+df$style[reviewing] <- reviewClass
+
+skimming <- df$content == "skimming"
+df$group[skimming] <- "consume"
+df$style[skimming] <- skimClass
+
+reading <- df$content == "reading"
+df$group[reading] <- "consume"
+df$style[reading] <- readClass
+
+annotating <- df$content == "annotating"
+df$group[annotating] <- "produce"
+df$style[annotating] <- annotateClass
+
+notetaking <- df$content == "note-taking"
+df$group[notetaking] <- "produce"
+df$style[notetaking] <- noteClass
+
+writing <- df$content == "writing"
+df$group[writing] <- "produce"
+df$style[writing] <- writeClass
+
+querying <- df$tier == "Activity - Querying"
+df$group[querying] <- "querying"
+df$style[querying] <- queryClass
+
+other <- df$tier == "Activity - Other"
+df$group[other] <- "other"
+df$style[other] <- otherClass
+
+organizing <- df$tier == "Activity - Organizing"
+df$group[organizing] <- "organizing"
+df$style[organizing] <- organizeClass
+
+#REMOVE extraneous fields 
+df <- df %>% select (-tier)
+
+# activities <- c("browsing", 
+#                 "reviewing",
+#                 "reading",
+#                 "annotating",
+#                 "note-taking",
+#                 "writing",
+#                 "querying",
+#                 "other",
+#                 "organizing")
+
+activities <- c("querying",
+                "browsing",
+                "consume",
+                "produce",
+                "organizing",
+                "other")
+
+order <- c(1,2,3,4,5,6)
+                
+
+df_groups <- data.frame( id = activities,
+                         content = activities,
+                         order = order )
+                      
+
+
+# options = list(stack=TRUE, moveable = FALSE, align = 'center',
+#                autoResize= TRUE,
+#                groupHeightMode = 'fixed',
+#                margin.item.horizontal	=0)
+
+options = list(stack=FALSE)
+
+timevis(df,
+        groups = df_groups,
+        options = options,
+        fit = TRUE)
+
+timevis(df,
+        options = options,
+        fit = TRUE)
+
+
+```
+```{r P3A1S1_sam.csv}
+
+df <- read.csv(file = "elans/P3A1S1_sam.csv", head = TRUE, sep=",")
+
+#SETUP DATES 
+df <- df %>% select(-X,-duration) %>% 
+      mutate(type = "range") %>% 
+      mutate(start = hms::as_hms(start)) %>% 
+      mutate(end = hms::as_hms(end)) %>% 
+      mutate(group ="")
+
+#SETUP START DATE 
+df[,c("start", "end")] <- sapply(df[,c("start", "end")], function(x) paste(Sys.Date(), x))
+
+#EXTRACT NOTES
+df_notes <- df %>% filter(tier == "NOTES")
+df_events <- df %>% filter(tier == "EVENTS")
+df_query <- df %>% filter(tier == "Search Query")
+df_engine <- df %>% filter(tier == "Search Engine")
+df_mode <- df %>% filter(tier == "Search Mode")
+
+#FILTER OUT NON-TIMELINE EVENTS 
+df <- df %>% filter(!(tier %in% c("PHASE","NOTES","EVENTS","Search Query","Search Engine","Search Mode")))
+
+#EVENTS 
+# new tab open in
+# open in place
+# next search page
+# download
+# new doc
+# transfer
+# open app
+# spatial
+
+queryClass = "background-color:#990D35; border-color:#990D35"
+
+browseClass = "background-color:#F36416; border-color:#F36416"
+
+reviewClass = "background-color:#FFB60A; border-color:#FFB60A"
+skimClass = "background-color:#FFC233; border-color:#FFC233"
+readClass = "background-color:#FFC847; border-color:#FFC847"
+
+annotateClass = "background-color:#86C133; border-color:#86C133"
+noteClass = "background-color:#90CC3E; border-color:#90CC3E"
+writeClass = "background-color:#A3D45E; border-color:#A3D45E"
+
+organizeClass = "background-color:#0267C1; border-color:#0267C1"
+otherClass =  "background-color:black; border-color:black"
+
+#SET GROUPS
+browsing <- df$content == "browsing"
+df$group[browsing] <- "browsing"
+df$style[browsing] <- browseClass
+
+reviewing <- df$content == "reviewing"
+df$group[reviewing] <- "consume"
+df$style[reviewing] <- reviewClass
+
+skimming <- df$content == "skimming"
+df$group[skimming] <- "consume"
+df$style[skimming] <- skimClass
+
+reading <- df$content == "reading"
+df$group[reading] <- "consume"
+df$style[reading] <- readClass
+
+annotating <- df$content == "annotating"
+df$group[annotating] <- "produce"
+df$style[annotating] <- annotateClass
+
+notetaking <- df$content == "note-taking"
+df$group[notetaking] <- "produce"
+df$style[notetaking] <- noteClass
+
+writing <- df$content == "writing"
+df$group[writing] <- "produce"
+df$style[writing] <- writeClass
+
+querying <- df$tier == "Activity - Querying"
+df$group[querying] <- "querying"
+df$style[querying] <- queryClass
+
+other <- df$tier == "Activity - Other"
+df$group[other] <- "other"
+df$style[other] <- otherClass
+
+organizing <- df$tier == "Activity - Organizing"
+df$group[organizing] <- "organizing"
+df$style[organizing] <- organizeClass
+
+#REMOVE extraneous fields 
+df <- df %>% select (-tier)
+
+# activities <- c("browsing", 
+#                 "reviewing",
+#                 "reading",
+#                 "annotating",
+#                 "note-taking",
+#                 "writing",
+#                 "querying",
+#                 "other",
+#                 "organizing")
+
+activities <- c("querying",
+                "browsing",
+                "consume",
+                "produce",
+                "organizing",
+                "other")
+
+order <- c(1,2,3,4,5,6)
+                
+
+df_groups <- data.frame( id = activities,
+                         content = activities,
+                         order = order )
+                      
+
+
+# options = list(stack=TRUE, moveable = FALSE, align = 'center',
+#                autoResize= TRUE,
+#                groupHeightMode = 'fixed',
+#                margin.item.horizontal	=0)
+
+options = list(stack=FALSE)
+
+timevis(df,
+        groups = df_groups,
+        options = options,
+        fit = TRUE)
+
+timevis(df,
+        options = options,
+        fit = TRUE)
+
+
+```
+
+```{r imports}
+# 
+# df <- read.csv(file = "elans/6P2A1S2.2_sam.csv", head = TRUE, sep=",")
+# df$type <-  "range"
+# df$start <-  hms::as_hms(df$start)
+# df$end <- hms::as_hms(df$end)
+# df$group <- df$content
+# # add a Date
+# df[,c("start", "end")] <- sapply(df[,c("start", "end")], function(x) paste(Sys.Date(), x))
+# 
+# groups <- data.frame( id = unique(df$group), 
+#                       content = unique(df$group))
+# 
+# 
+# df <- df %>% select(-tier, -duration, -id)
+# 
+# # timevis(data = df, 
+#         # groups = groups)
+# 
+# timevis(df,
+#         groups = groups,
+#         fit = TRUE)
+# 
+
+```
+
+
+
+=
+
+
+## Including Plots
+
+
+```{r timeviz sample}
+timevisData <- data.frame(
+  id = 1:11,
+  content = c("Open", "Open",
+              "Open", "Open", "Half price entry",
+              "Staff meeting", "Open", "Adults only", "Open", "Hot tub closes",
+              "Siesta"),
+  start = c("2016-05-01 07:30:00", "2016-05-01 14:00:00",
+            "2016-05-01 06:00:00", "2016-05-01 14:00:00", "2016-05-01 08:00:00",
+            "2016-05-01 08:00:00", "2016-05-01 08:30:00", "2016-05-01 14:00:00",
+            "2016-05-01 16:00:00", "2016-05-01 19:30:00",
+            "2016-05-01 12:00:00"),
+  end   = c("2016-05-01 12:00:00", "2016-05-01 20:00:00",
+            "2016-05-01 12:00:00", "2016-05-01 22:00:00", "2016-05-01 10:00:00",
+            "2016-05-01 08:30:00", "2016-05-01 12:00:00", "2016-05-01 16:00:00",
+            "2016-05-01 20:00:00", NA,
+            "2016-05-01 14:00:00"),
+  group = c(rep("lib", 2), rep("gym", 3), rep("pool", 5), NA),
+  groups = timevisDataGroups,
+  type = c(rep("range", 9), "point", "background")
+)
+timevisDataGroups <- data.frame(
+  id = c("lib", "gym", "pool"),
+  content = c("Library", "Gym", "Pool")
+)
+
+timevis(data = timevisData,
+        groups = timevisDataGroups,
+        fit = TRUE)
+```
+
+
